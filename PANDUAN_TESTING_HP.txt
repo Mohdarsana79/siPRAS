@@ -1,0 +1,47 @@
+=========================================================
+PANDUAN PENGUJIAN FITUR SCAN ASET DI HP (VIA NGROK)
+=========================================================
+
+Berikut adalah langkah-langkah yang telah dilakukan dan panduan jika Anda ingin melakukan pengujian di perangkat HP:
+
+1. PERSIAPAN SERVER (LAPTOP)
+-----------------------------
+- Pastikan laptop dan HP berada dalam jaringan Wi-Fi yang sama (opsional jika pakai Ngrok).
+- Jalankan server Laravel agar bisa diakses dari luar:
+  Command: php artisan serve --host 0.0.0.0 --port 8000
+
+2. MENGATASI LAYAR PUTIH (MODE PRODUKSI)
+-----------------------------------------
+- Layar putih di HP terjadi karena HP tidak bisa mencari aset di 'localhost'.
+- SOLUSI: Selalu jalankan perintah ini sebelum testing di HP:
+  Command: npm run build
+- Pastikan file 'public/hot' dihapus (jika ada) agar sistem tidak memaksa mencari localhost.
+
+3. MENGGUNAKAN NGROK UNTUK AKSES HTTPS
+---------------------------------------
+- Kamera HP WAJIB menggunakan HTTPS. Ngrok menyediakan ini secara gratis.
+- Command: ngrok http 8000
+- Gunakan alamat yang berawalan 'https://' (contoh: https://abcd-123.ngrok-free.app) di browser HP.
+
+4. MENGATASI ERROR "MIXED CONTENT" (CSS/JS TIDAK MUNCUL)
+---------------------------------------------------------
+- Masalah ini terjadi karena Ngrok (HTTPS) memanggil aset (HTTP).
+- SOLUSI (Sudah terpasang di AppServiceProvider.php):
+  Sistem akan mendeteksi link 'ngrok-free.app' dan secara otomatis memaksa semua link aset menggunakan HTTPS.
+
+5. LANGKAH-LANGKAH DI HP
+-------------------------
+- Buka browser (Chrome/Safari) di HP.
+- Masukkan link HTTPS dari Ngrok.
+- Jika ada peringatan "Insecure Content" atau "CORS", cukup refresh halaman atau buka di Tab Penyamaran (Incognito).
+- Saat klik "Scan Label Aset", izinkan (Allow) akses kamera saat diminta browser.
+
+6. RINGKASAN PERINTAH TERMINAL
+-------------------------------
+Terminal 1: php artisan serve --host 0.0.0.0
+Terminal 2: npm run build
+Terminal 3: ngrok http 8000
+
+=========================================================
+siPRAS - Smart Inventory & Paperless Resource System
+=========================================================
