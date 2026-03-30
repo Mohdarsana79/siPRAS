@@ -38,7 +38,7 @@
         <tr>
             <td style="border: none;">KECAMATAN</td>
             <td style="border: none;">:</td>
-            <td style="border: none;">{{ strtoupper($profile->kecamatan ?? '________________') }}</td>
+            <td style="border: none; text-align: left;">{{ strtoupper($profile->kecamatan ?? '________________') }}</td>
         </tr>
         <tr>
             <td style="border: none;">SKPD</td>

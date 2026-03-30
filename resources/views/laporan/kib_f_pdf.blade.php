@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>{{ $title }}</title>
     <style>
-        body { font-family: sans-serif; font-size: {{ $fontSize }}; margin: 0; padding: 0; }
+        body { font-family: sans-serif; margin: 0; padding: 0; }
         .header { text-align: center; margin-bottom: 10px; }
         .header table { border: none !important; margin-bottom: 0; }
         .header td { border: none !important; padding: 0; vertical-align: middle; }
@@ -22,10 +22,10 @@
         .footer { margin-top: 20px; }
         .footer table { border: none !important; }
         .footer td { border: none !important; }
-        @page { size: landscape; margin: 1cm; }
+        @page { margin: 1cm; }
     </style>
 </head>
-<body>
+<body style="font-size: {{ $fontSize }};">
     <div class="header">
         <table style="width: 100%;">
             <tr>
@@ -56,32 +56,39 @@
         <h5 style="margin: 0; font-weight: normal;">KONSTRUKSI DALAM PENGERJAAN</h5>
     </div>
 
+    @php
+        $p_prov = strtoupper($profile->provinsi ?? '________________');
+        $p_kab  = strtoupper($profile->kabupaten_kota ?? '________________');
+        $p_kec  = strtoupper($profile->kecamatan ?? '________________');
+        $p_skpd = strtoupper($profile->unor_induk ?? '________________');
+        $p_inst = strtoupper($profile->nama_sekolah ?? '________________');
+    @endphp
     <div style="margin-bottom: 15px;">
-        <table style="width: 100%; border: none !important;">
+        <table style="width: 100%; border: none !important; table-layout: auto !important;">
             <tr>
-                <td width="120" style="border: none !important; padding: 1px 0;">PROVINSI</td>
-                <td width="10" style="border: none !important; padding: 1px 0;">:</td>
-                <td style="border: none !important; padding: 1px 0;">{{ strtoupper($profile->provinsi ?? '________________') }}</td>
+                <td style="width: 120px; border: none !important; padding: 1px 0; text-align: left;">PROVINSI</td>
+                <td style="width: 15px; border: none !important; padding: 1px 0; text-align: center;">:</td>
+                <td style="border: none !important; padding: 1px 0; text-align: left;">{{ $p_prov }}</td>
             </tr>
             <tr>
-                <td style="border: none !important; padding: 1px 0;">KAB / KOTA</td>
-                <td style="border: none !important; padding: 1px 0;">:</td>
-                <td style="border: none !important; padding: 1px 0;">{{ strtoupper($profile->kabupaten_kota ?? '________________') }}</td>
+                <td style="border: none !important; padding: 1px 0; text-align: left;">KAB / KOTA</td>
+                <td style="border: none !important; padding: 1px 0; text-align: center;">:</td>
+                <td style="border: none !important; padding: 1px 0; text-align: left;">{{ $p_kab }}</td>
             </tr>
             <tr>
-                <td style="border: none !important; padding: 1px 0;">KECAMATAN</td>
-                <td style="border: none !important; padding: 1px 0;">:</td>
-                <td style="border: none !important; padding: 1px 0;">{{ strtoupper($profile->kecamatan ?? '________________') }}</td>
+                <td style="border: none !important; padding: 1px 0; text-align: left;">KECAMATAN</td>
+                <td style="border: none !important; padding: 1px 0; text-align: center;">:</td>
+                <td style="border: none !important; padding: 1px 0; text-align: left;">{{ $p_kec }}</td>
             </tr>
             <tr>
-                <td style="border: none !important; padding: 1px 0;">SKPD</td>
-                <td style="border: none !important; padding: 1px 0;">:</td>
-                <td style="border: none !important; padding: 1px 0;">{{ strtoupper($profile->unor_induk ?? '________________') }}</td>
+                <td style="border: none !important; padding: 1px 0; text-align: left;">SKPD</td>
+                <td style="border: none !important; padding: 1px 0; text-align: center;">:</td>
+                <td style="border: none !important; padding: 1px 0; text-align: left;">{{ $p_skpd }}</td>
             </tr>
             <tr>
-                <td style="border: none !important; padding: 1px 0;">INSTANSI</td>
-                <td style="border: none !important; padding: 1px 0;">:</td>
-                <td style="border: none !important; padding: 1px 0;">{{ strtoupper($profile->nama_sekolah ?? '________________') }}</td>
+                <td style="border: none !important; padding: 1px 0; text-align: left;">INSTANSI</td>
+                <td style="border: none !important; padding: 1px 0; text-align: center;">:</td>
+                <td style="border: none !important; padding: 1px 0; text-align: left;">{{ $p_inst }}</td>
             </tr>
         </table>
     </div>

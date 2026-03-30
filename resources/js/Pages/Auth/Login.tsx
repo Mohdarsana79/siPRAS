@@ -34,27 +34,27 @@ export default function Login({
             <Head title="Log in" />
 
             {status && (
-                <div className="mb-4 text-sm font-medium text-emerald-600 bg-emerald-50 p-3 rounded-lg border border-emerald-200">
+                <div className="mb-4 text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 p-3 rounded-lg border border-emerald-200 dark:border-emerald-800">
                     {status}
                 </div>
             )}
 
             <div className="mb-8 text-center">
-                <div className="inline-flex p-3 rounded-2xl bg-indigo-100 text-indigo-600 mb-4 animate-bounce">
+                <div className="inline-flex p-3 rounded-2xl bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 mb-4 animate-bounce">
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                     </svg>
                 </div>
-                <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Selamat Datang</h2>
-                <p className="text-sm text-gray-500 mt-2 font-medium">Lengkapi detail di bawah untuk masuk ke akun Anda</p>
+                <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Selamat Datang</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">Lengkapi detail di bawah untuk masuk ke akun Anda</p>
             </div>
 
             <form onSubmit={submit} className="space-y-5">
                 <div className="relative group">
-                    <InputLabel htmlFor="login" value="Email atau Username" className="font-bold text-gray-700 ml-1 mb-1.5 flex items-center gap-2" />
+                    <InputLabel htmlFor="login" value="Email atau Username" className="font-bold text-gray-700 dark:text-gray-300 ml-1 mb-1.5 flex items-center gap-2" />
                     
                     <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-hover:text-indigo-500 transition-colors">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
@@ -65,7 +65,7 @@ export default function Login({
                             name="login"
                             placeholder="Email atau Username"
                             value={data.login}
-                            className="block w-full pl-11 pr-4 py-3.5 rounded-2xl border border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 transition-all shadow-sm bg-gray-50/50 focus:bg-white text-gray-900 placeholder:text-gray-400"
+                            className="block w-full pl-11 pr-4 py-3.5 rounded-2xl border border-gray-200 dark:border-gray-700/60 focus:border-indigo-500 focus:ring-indigo-500 transition-all shadow-sm bg-gray-50/50 dark:bg-gray-800/50 focus:bg-white dark:focus:bg-gray-900 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder-gray-500"
                             autoComplete="username"
                             isFocused={true}
                             onChange={(e) => setData('login', e.target.value)}
@@ -75,10 +75,10 @@ export default function Login({
                 </div>
 
                 <div className="relative group">
-                    <InputLabel htmlFor="password" value="Password" className="font-bold text-gray-700 ml-1 mb-1.5 flex items-center gap-2" />
+                    <InputLabel htmlFor="password" value="Password" className="font-bold text-gray-700 dark:text-gray-300 ml-1 mb-1.5 flex items-center gap-2" />
                     
                     <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-hover:text-indigo-500 transition-colors">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>
@@ -89,14 +89,14 @@ export default function Login({
                             name="password"
                             placeholder="••••••••"
                             value={data.password}
-                            className="block w-full pl-11 pr-12 py-3.5 rounded-2xl border border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 transition-all shadow-sm bg-gray-50/50 focus:bg-white text-gray-900 placeholder:text-gray-400"
+                            className="block w-full pl-11 pr-12 py-3.5 rounded-2xl border border-gray-200 dark:border-gray-700/60 focus:border-indigo-500 focus:ring-indigo-500 transition-all shadow-sm bg-gray-50/50 dark:bg-gray-800/50 focus:bg-white dark:focus:bg-gray-900 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder-gray-500"
                             autoComplete="current-password"
                             onChange={(e) => setData('password', e.target.value)}
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-indigo-600 transition-colors"
+                            className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                         >
                             {showPassword ? (
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -121,7 +121,7 @@ export default function Login({
                             className="w-5 h-5 rounded-lg border-gray-300 text-indigo-600 focus:ring-indigo-500 group-hover:border-indigo-400 transition"
                             onChange={(e) => setData('remember', (e.target.checked || false) as false)}
                         />
-                        <span className="ms-2.5 text-sm font-semibold text-gray-600 group-hover:text-gray-900 transition">
+                        <span className="ms-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200 transition">
                             Ingat Saya
                         </span>
                     </label>
@@ -129,7 +129,7 @@ export default function Login({
                     {canResetPassword && (
                         <Link
                             href={route('password.request')}
-                            className="text-sm font-bold text-indigo-600 hover:text-indigo-800 transition"
+                            className="text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition"
                         >
                             Lupa Password?
                         </Link>
@@ -146,13 +146,13 @@ export default function Login({
                     <>
                         <div className="relative flex items-center justify-center my-6">
                             <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-gray-200"></div>
+                                <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
                             </div>
-                            <div className="relative px-4 bg-white text-xs font-bold text-gray-400 uppercase tracking-widest">Atau</div>
+                            <div className="relative px-4 bg-transparent text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Atau</div>
                         </div>
 
-                        <p className="text-center text-sm text-gray-600">
-                            Belum punya akun? <Link href={route('register')} className="font-bold text-indigo-600 hover:text-indigo-800 underline decoration-indigo-200 underline-offset-4 decoration-2">Daftar sekarang</Link>
+                        <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+                            Belum punya akun? <Link href={route('register')} className="font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 underline decoration-indigo-200 dark:decoration-indigo-800 underline-offset-4 decoration-2">Daftar sekarang</Link>
                         </p>
                     </>
                 )}

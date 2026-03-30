@@ -1,6 +1,7 @@
 import Dropdown from '@/Components/Dropdown';
 import Sidebar from '@/Components/Sidebar';
 import Toast from '@/Components/Toast';
+import Modal from '@/Components/Modal';
 import { Link, usePage } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useEffect, useState } from 'react';
 
@@ -8,10 +9,16 @@ export default function Authenticated({
     header,
     children,
 }: PropsWithChildren<{ header?: ReactNode }>) {
-    const { auth, flash, errors } = usePage().props as any;
+    const { auth, flash, errors, hasSchoolProfile } = usePage().props as any;
     const user = auth.user;
     const [showingSidebar, setShowingSidebar] = useState(false);
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+    // Calculate if we need to show the School Profile validation modal
+    const isDashboard = route().current('dashboard');
+    const isSchoolProfile = route().current('school-profile.index') || route().current('school-profile.update');
+    // Ensure route() exists and has current() defined before accessing it 
+    const showProfileWarning = typeof route === 'function' ? (!hasSchoolProfile && !isDashboard && !isSchoolProfile) : false;
 
     const [isDarkMode, setIsDarkMode] = useState(() => {
         if (typeof window !== 'undefined') {
@@ -81,7 +88,7 @@ export default function Authenticated({
                                     Dashboard Utama
                                 </div>
                             )}
-                            <div className="flex items-center gap-2 mt-1 hidden sm:flex">
+                            <div className="hidden sm:flex items-center gap-2 mt-1">
                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-200"></span>
                                 <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Status: Sesi Aktif</span>
                             </div>
@@ -193,6 +200,25 @@ export default function Authenticated({
                     </div>
                 </footer>
             </div>
+
+            {/* School Profile Warning Modal */}
+            <Modal show={showProfileWarning && !showingSidebar /* Just a sanity flag */} maxWidth="sm" closeable={false} onClose={() => {}}>
+                <div className="p-6 sm:p-8 bg-white dark:bg-gray-900 border-2 border-amber-200 dark:border-amber-900/50 rounded-2xl relative overflow-hidden text-center z-50">
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-amber-400 opacity-10 dark:opacity-5 blur-3xl rounded-full pointer-events-none"></div>
+                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-orange-400 opacity-10 dark:opacity-5 blur-3xl rounded-full pointer-events-none"></div>
+                    <div className="relative mx-auto flex items-center justify-center w-20 h-20 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-500 mb-6 shadow-inner shadow-amber-50 dark:shadow-black/20 animate-pulse">
+                        <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <h3 className="relative text-2xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">Identitas Sekolah<br/>Belum Terisi!</h3>
+                    <p className="relative text-sm text-gray-500 dark:text-gray-400 mb-8 font-medium leading-relaxed">Anda <strong>wajib</strong> melengkapi profil dan identitas instansi/sekolah terlebih dahulu sebelum dapat mengakses fitur sistem lainnya.</p>
+                    <Link href={route('school-profile.index')} className="relative inline-flex items-center justify-center w-full px-6 py-4 font-black text-white text-sm uppercase tracking-wider transition-all bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl hover:from-amber-600 hover:to-orange-600 shadow-xl shadow-amber-500/30 dark:shadow-amber-900/40 hover:-translate-y-1 active:scale-95">
+                        <svg className="w-5 h-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                        Isi Identitas Sekarang
+                    </Link>
+                </div>
+            </Modal>
         </div>
     );
 }

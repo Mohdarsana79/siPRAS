@@ -10,15 +10,21 @@ export default function Welcome({
 
     const [dark, setDark] = useState<boolean>(() => {
         if (typeof window !== 'undefined') {
-            const stored = localStorage.getItem('sipras-dark-mode');
-            if (stored !== null) return stored === 'true';
+            const stored = localStorage.getItem('theme');
+            if (stored !== null) return stored === 'dark';
             return window.matchMedia('(prefers-color-scheme: dark)').matches;
         }
         return false;
     });
 
     useEffect(() => {
-        localStorage.setItem('sipras-dark-mode', String(dark));
+        if (dark) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        }
     }, [dark]);
 
     return (

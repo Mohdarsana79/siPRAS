@@ -47,13 +47,13 @@ export default function Register({ canRegister = true }: { canRegister?: boolean
             <GuestLayout>
                 <Head title="Pendaftaran Ditutup" />
                 <div className="text-center py-4">
-                    <div className="inline-flex p-4 rounded-2xl bg-red-100 text-red-500 mb-6">
+                    <div className="inline-flex p-4 rounded-2xl bg-red-100 dark:bg-red-900/30 text-red-500 dark:text-red-400 mb-6">
                         <svg xmlns="http://www.w3.org/2000/svg" className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                     </div>
-                    <h2 className="text-2xl font-extrabold text-gray-900 mb-2">Pendaftaran Ditutup</h2>
-                    <p className="text-gray-500 text-sm mb-8">
+                    <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-2">Pendaftaran Ditutup</h2>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mb-8">
                         Sistem ini hanya mengizinkan <strong>satu akun</strong> administrator.<br />
                         Pendaftaran akun baru tidak tersedia.
                     </p>
@@ -76,20 +76,20 @@ export default function Register({ canRegister = true }: { canRegister?: boolean
             <Head title="Register" />
 
             <div className="mb-6 text-center">
-                <div className="inline-flex p-3 rounded-2xl bg-purple-100 text-purple-600 mb-4 animate-pulse">
+                <div className="inline-flex p-3 rounded-2xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 mb-4 animate-pulse">
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                     </svg>
                 </div>
-                <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">Buat Akun</h2>
-                <p className="text-sm text-gray-500 mt-2 font-medium">Daftar untuk mulai mengelola inventaris sekolah</p>
+                <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">Buat Akun</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">Daftar untuk mulai mengelola inventaris sekolah</p>
             </div>
 
             <form onSubmit={submit} className="space-y-4">
                 <div className="relative group">
-                    <InputLabel htmlFor="name" value="Nama Lengkap" className="font-bold text-gray-700 ml-1 mb-1.5 flex items-center gap-2" />
+                    <InputLabel htmlFor="name" value="Nama Lengkap" className="font-bold text-gray-700 dark:text-gray-300 ml-1 mb-1.5 flex items-center gap-2" />
                     <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-hover:text-purple-500 transition-colors">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-hover:text-purple-500 dark:group-hover:text-purple-400 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
@@ -99,7 +99,7 @@ export default function Register({ canRegister = true }: { canRegister?: boolean
                             name="name"
                             placeholder="John Doe"
                             value={data.name}
-                            className="block w-full pl-11 pr-4 py-3 rounded-2xl border border-gray-200 focus:border-purple-500 focus:ring-purple-500 transition-all shadow-sm bg-gray-50/50 focus:bg-white text-gray-900 placeholder:text-gray-400"
+                            className="block w-full pl-11 pr-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700/60 focus:border-purple-500 focus:ring-purple-500 transition-all shadow-sm bg-gray-50/50 dark:bg-gray-800/50 focus:bg-white dark:focus:bg-gray-900 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder-gray-500"
                             autoComplete="name"
                             isFocused={true}
                             onChange={(e) => setData('name', e.target.value)}
@@ -110,9 +110,9 @@ export default function Register({ canRegister = true }: { canRegister?: boolean
                 </div>
 
                 <div className="relative group">
-                    <InputLabel htmlFor="email" value="Alamat Email" className="font-bold text-gray-700 ml-1 mb-1.5 flex items-center gap-2" />
+                    <InputLabel htmlFor="email" value="Alamat Email" className="font-bold text-gray-700 dark:text-gray-300 ml-1 mb-1.5 flex items-center gap-2" />
                     <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-hover:text-purple-500 transition-colors">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-hover:text-purple-500 dark:group-hover:text-purple-400 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
                             </svg>
@@ -123,7 +123,7 @@ export default function Register({ canRegister = true }: { canRegister?: boolean
                             name="email"
                             placeholder="nama@email.com"
                             value={data.email}
-                            className="block w-full pl-11 pr-4 py-3 rounded-2xl border border-gray-200 focus:border-purple-500 focus:ring-purple-500 transition-all shadow-sm bg-gray-50/50 focus:bg-white text-gray-900 placeholder:text-gray-400"
+                            className="block w-full pl-11 pr-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700/60 focus:border-purple-500 focus:ring-purple-500 transition-all shadow-sm bg-gray-50/50 dark:bg-gray-800/50 focus:bg-white dark:focus:bg-gray-900 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder-gray-500"
                             autoComplete="username"
                             onChange={(e) => setData('email', e.target.value)}
                             required
@@ -133,9 +133,9 @@ export default function Register({ canRegister = true }: { canRegister?: boolean
                 </div>
 
                 <div className="relative group">
-                    <InputLabel htmlFor="password" value="Password" className="font-bold text-gray-700 ml-1 mb-1.5 flex items-center gap-2" />
+                    <InputLabel htmlFor="password" value="Password" className="font-bold text-gray-700 dark:text-gray-300 ml-1 mb-1.5 flex items-center gap-2" />
                     <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-hover:text-purple-500 transition-colors">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-hover:text-purple-500 dark:group-hover:text-purple-400 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>
@@ -146,7 +146,7 @@ export default function Register({ canRegister = true }: { canRegister?: boolean
                             name="password"
                             placeholder="••••••••"
                             value={data.password}
-                            className="block w-full pl-11 pr-12 py-3 rounded-2xl border border-gray-200 focus:border-purple-500 focus:ring-purple-500 transition-all shadow-sm bg-gray-50/50 focus:bg-white text-gray-900 placeholder:text-gray-400"
+                            className="block w-full pl-11 pr-12 py-3 rounded-2xl border border-gray-200 dark:border-gray-700/60 focus:border-purple-500 focus:ring-purple-500 transition-all shadow-sm bg-gray-50/50 dark:bg-gray-800/50 focus:bg-white dark:focus:bg-gray-900 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder-gray-500"
                             autoComplete="new-password"
                             onChange={(e) => setData('password', e.target.value)}
                             required
@@ -154,7 +154,7 @@ export default function Register({ canRegister = true }: { canRegister?: boolean
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-purple-600 transition-colors"
+                            className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
                         >
                             {showPassword ? (
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -173,14 +173,14 @@ export default function Register({ canRegister = true }: { canRegister?: boolean
                     {/* Password Strength UI */}
                     <div className="mt-3 ml-1 mr-1">
                         <div className="flex justify-between items-center mb-1.5">
-                            <span className="text-xs font-semibold text-gray-500">Kekuatan Password</span>
+                            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Kekuatan Password</span>
                             {data.password && (
                                 <span className={`text-xs font-bold ${strength.text}`}>
                                     {strength.label}
                                 </span>
                             )}
                         </div>
-                        <div className="h-1.5 w-full bg-gray-200 rounded-full overflow-hidden flex">
+                        <div className="h-1.5 w-full bg-gray-200 dark:bg-gray-700/50 rounded-full overflow-hidden flex">
                             <div 
                                 className={`h-full transition-all duration-500 ease-out ${strength.color}`} 
                                 style={{ width: strength.width }}
@@ -208,9 +208,9 @@ export default function Register({ canRegister = true }: { canRegister?: boolean
                 </div>
 
                 <div className="relative group">
-                    <InputLabel htmlFor="password_confirmation" value="Konfirmasi Password" className="font-bold text-gray-700 ml-1 mb-1.5 flex items-center gap-2" />
+                    <InputLabel htmlFor="password_confirmation" value="Konfirmasi Password" className="font-bold text-gray-700 dark:text-gray-300 ml-1 mb-1.5 flex items-center gap-2" />
                     <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-hover:text-purple-500 transition-colors">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-hover:text-purple-500 dark:group-hover:text-purple-400 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -221,7 +221,7 @@ export default function Register({ canRegister = true }: { canRegister?: boolean
                             name="password_confirmation"
                             placeholder="••••••••"
                             value={data.password_confirmation}
-                            className="block w-full pl-11 pr-12 py-3 rounded-2xl border border-gray-200 focus:border-purple-500 focus:ring-purple-500 transition-all shadow-sm bg-gray-50/50 focus:bg-white text-gray-900 placeholder:text-gray-400"
+                            className="block w-full pl-11 pr-12 py-3 rounded-2xl border border-gray-200 dark:border-gray-700/60 focus:border-purple-500 focus:ring-purple-500 transition-all shadow-sm bg-gray-50/50 dark:bg-gray-800/50 focus:bg-white dark:focus:bg-gray-900 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder-gray-500"
                             autoComplete="new-password"
                             onChange={(e) => setData('password_confirmation', e.target.value)}
                             required
@@ -229,7 +229,7 @@ export default function Register({ canRegister = true }: { canRegister?: boolean
                         <button
                             type="button"
                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-purple-600 transition-colors"
+                            className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
                         >
                             {showConfirmPassword ? (
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -257,13 +257,13 @@ export default function Register({ canRegister = true }: { canRegister?: boolean
 
                 <div className="relative flex items-center justify-center my-6">
                     <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-gray-200"></div>
+                        <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
                     </div>
-                    <div className="relative px-4 bg-white text-xs font-bold text-gray-400 uppercase tracking-widest">Sudah punya?</div>
+                    <div className="relative px-4 bg-transparent text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Sudah punya?</div>
                 </div>
 
-                <p className="text-center text-sm text-gray-600">
-                    Sudah mendaftar? <Link href={route('login')} className="font-bold text-purple-600 hover:text-purple-800 underline decoration-purple-200 underline-offset-4 decoration-2">Masuk di sini</Link>
+                <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+                    Sudah mendaftar? <Link href={route('login')} className="font-bold text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 underline decoration-purple-200 dark:decoration-purple-800 underline-offset-4 decoration-2">Masuk di sini</Link>
                 </p>
             </form>
         </GuestLayout>
