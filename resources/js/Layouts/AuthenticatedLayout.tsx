@@ -28,6 +28,30 @@ export default function Authenticated({
         }
     }, [flash, errors]);
 
+    // Auto reload on idle (1 hour) to prevent CSRF error 419
+    useEffect(() => {
+        let timeout: ReturnType<typeof setTimeout>;
+
+        const resetTimer = () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                window.location.reload();
+            }, 3600000); // 1 Jam (3600000 ms)
+        };
+
+        // Setup activity events
+        const events = ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'];
+        events.forEach(event => window.addEventListener(event, resetTimer));
+
+        // Start initial timer
+        resetTimer();
+
+        return () => {
+            clearTimeout(timeout);
+            events.forEach(event => window.removeEventListener(event, resetTimer));
+        };
+    }, []);
+
     return (
         <div className="flex h-screen overflow-hidden bg-gray-50">
             {toast && (

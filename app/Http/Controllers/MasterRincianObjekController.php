@@ -12,7 +12,9 @@ class MasterRincianObjekController extends Controller
         $request->validate([
             'master_objek_id'    => 'required|exists:master_objeks,id',
             'kode_rincian_objek' => 'required|string|size:2',
-            'nama_rincian_objek' => 'required|string|max:255',
+            'nama_rincian_objek' => 'required|string|max:255|unique:master_rincian_objeks,nama_rincian_objek',
+        ], [
+            'nama_rincian_objek.unique' => 'rincian objek sudah ada',
         ]);
 
         MasterRincianObjek::create($request->all());
@@ -25,7 +27,9 @@ class MasterRincianObjekController extends Controller
         $request->validate([
             'master_objek_id'    => 'required|exists:master_objeks,id',
             'kode_rincian_objek' => 'required|string|size:2',
-            'nama_rincian_objek' => 'required|string|max:255',
+            'nama_rincian_objek' => 'required|string|max:255|unique:master_rincian_objeks,nama_rincian_objek,' . $master_rincian_objek->id,
+        ], [
+            'nama_rincian_objek.unique' => 'rincian objek sudah ada',
         ]);
 
         $master_rincian_objek->update($request->all());

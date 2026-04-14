@@ -45,10 +45,10 @@ interface PaginatedData<T> {
 }
 
 interface Props {
-    objeks: Objek[];
-    rincianObjeks: RincianObjek[];
+    objeks: PaginatedData<Objek>;
+    rincianObjeks: PaginatedData<RincianObjek>;
     kategoris: PaginatedData<Kategori>;
-    filters: { search?: string };
+    filters: { search?: string; tab?: string };
     kelompokMap: Record<string, string>;
     jenisMap: Record<string, string>;
     jenisToKib: Record<string, string>;
@@ -119,8 +119,14 @@ function KodeInput({
 }
 
 export default function Index({ objeks, rincianObjeks, kategoris, filters, kelompokMap, jenisMap, jenisToKib, flash }: Props) {
-    const [activeTab, setActiveTab] = useState<'kategori' | 'objek' | 'rincian'>('kategori');
+    const [activeTab, setActiveTab] = useState<'kategori' | 'objek' | 'rincian'>((filters.tab as any) || 'kategori');
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
+
+    useEffect(() => {
+        if (filters.tab && filters.tab !== activeTab) {
+            setActiveTab(filters.tab as any);
+        }
+    }, [filters.tab]);
 
     // Common Modals State
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -157,13 +163,20 @@ export default function Index({ objeks, rincianObjeks, kategoris, filters, kelom
     useEffect(() => {
         const t = setTimeout(() => {
             if (searchTerm !== (filters.search || '')) {
-                router.get(route('master-kategori.index'), { search: searchTerm }, {
-                    preserveState: true, replace: true
+                router.get(route('master-kategori.index'), { search: searchTerm, tab: activeTab }, {
+                    preserveState: true, replace: true, preserveScroll: true
                 });
             }
         }, 300);
         return () => clearTimeout(t);
     }, [searchTerm]);
+
+    const handleTabChange = (tab: 'kategori' | 'objek' | 'rincian') => {
+        setActiveTab(tab);
+        router.get(route('master-kategori.index'), { search: searchTerm, tab: tab }, {
+            preserveState: true, replace: true, preserveScroll: true
+        });
+    };
 
     useEffect(() => {
         if (formKategori.errors.kode_sub_rincian_objek) {
@@ -253,15 +266,15 @@ export default function Index({ objeks, rincianObjeks, kategoris, filters, kelom
                 
                 {/* Tabs Navigation */}
                 <div className="flex bg-white p-1 rounded-2xl border border-gray-200 shadow-sm w-fit">
-                    <button onClick={() => setActiveTab('kategori')} className={`px-5 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${activeTab === 'kategori' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-gray-500 hover:bg-gray-50'}`}>
+                    <button onClick={() => handleTabChange('kategori')} className={`px-5 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${activeTab === 'kategori' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-gray-500 hover:bg-gray-50'}`}>
                         <Icons.Category className="w-4 h-4" />
                         LEVEL 6 - KATEGORI
                     </button>
-                    <button onClick={() => setActiveTab('rincian')} className={`px-5 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${activeTab === 'rincian' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-gray-500 hover:bg-gray-50'}`}>
+                    <button onClick={() => handleTabChange('rincian')} className={`px-5 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${activeTab === 'rincian' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-gray-500 hover:bg-gray-50'}`}>
                         <Icons.GitBranch className="w-4 h-4" />
                         LEVEL 5 - RINCIAN
                     </button>
-                    <button onClick={() => setActiveTab('objek')} className={`px-5 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${activeTab === 'objek' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-gray-500 hover:bg-gray-50'}`}>
+                    <button onClick={() => handleTabChange('objek')} className={`px-5 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${activeTab === 'objek' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-gray-500 hover:bg-gray-50'}`}>
                         <Icons.Layers className="w-4 h-4" />
                         LEVEL 4 - OBJEK
                     </button>
@@ -318,7 +331,7 @@ export default function Index({ objeks, rincianObjeks, kategoris, filters, kelom
                             )}
                         </thead>
                         <tbody className="divide-y divide-gray-50">
-                            {activeTab === 'objek' && objeks.map(item => (
+                            {activeTab === 'objek' && objeks.data.map(item => (
                                 <tr key={item.id} className="hover:bg-gray-50 group transition-all">
                                     <td className="px-6 py-4 font-black text-gray-400">{item.kode_kelompok} ({kelompokMap[item.kode_kelompok] || '?'})</td>
                                     <td className="px-6 py-4 font-black text-indigo-600">{item.kode_jenis} ({jenisMap[item.kode_jenis] || '?'})</td>
@@ -332,7 +345,7 @@ export default function Index({ objeks, rincianObjeks, kategoris, filters, kelom
                                     </td>
                                 </tr>
                             ))}
-                            {activeTab === 'rincian' && rincianObjeks.map(item => (
+                            {activeTab === 'rincian' && rincianObjeks.data.map(item => (
                                 <tr key={item.id} className="hover:bg-gray-50 group transition-all">
                                     <td className="px-6 py-4">
                                         <div className="text-[10px] font-black text-gray-400 uppercase tracking-tighter mb-0.5">{item.objek?.nama_objek}</div>
@@ -370,6 +383,16 @@ export default function Index({ objeks, rincianObjeks, kategoris, filters, kelom
                             ))}
                         </tbody>
                     </table>
+                    {activeTab === 'objek' && (
+                        <div className="p-6 border-t border-gray-50">
+                            <Pagination links={objeks.links} />
+                        </div>
+                    )}
+                    {activeTab === 'rincian' && (
+                        <div className="p-6 border-t border-gray-50">
+                            <Pagination links={rincianObjeks.links} />
+                        </div>
+                    )}
                     {activeTab === 'kategori' && (
                         <div className="p-6 border-t border-gray-50">
                             <Pagination links={kategoris.links} />
@@ -396,6 +419,7 @@ export default function Index({ objeks, rincianObjeks, kategoris, filters, kelom
                                     value={formObjek.data.kode_kelompok}
                                     onChange={(val) => formObjek.setData('kode_kelompok', val as string)}
                                     options={Object.entries(kelompokMap).map(([k, v]) => ({ value: k, label: `${k} - ${v}` }))}
+                                    error={formObjek.errors.kode_kelompok}
                                     required
                                 />
                                 <SearchableSelect
@@ -403,6 +427,7 @@ export default function Index({ objeks, rincianObjeks, kategoris, filters, kelom
                                     value={formObjek.data.kode_jenis}
                                     onChange={(val) => formObjek.setData('kode_jenis', val as string)}
                                     options={Object.entries(jenisMap).map(([k, v]) => ({ value: k, label: `${k} - ${v}` }))}
+                                    error={formObjek.errors.kode_jenis}
                                     required
                                 />
                             </div>
@@ -411,6 +436,7 @@ export default function Index({ objeks, rincianObjeks, kategoris, filters, kelom
                                 <div className="space-y-1">
                                     <InputLabel value="Nama Objek" className="text-[10px] font-black text-gray-400 uppercase" />
                                     <TextInput value={formObjek.data.nama_objek} onChange={e => formObjek.setData('nama_objek', e.target.value.toUpperCase())} className="w-full" placeholder="ALAT BESAR..." required />
+                                    <InputError message={formObjek.errors.nama_objek} className="mt-2" />
                                 </div>
                             </div>
                         </>
@@ -422,7 +448,8 @@ export default function Index({ objeks, rincianObjeks, kategoris, filters, kelom
                                 label="PILIH OBJEK (LEVEL 4)"
                                 value={formRincian.data.master_objek_id}
                                 onChange={(val) => formRincian.setData('master_objek_id', val as string)}
-                                options={objeks.map(o => ({ value: o.id, label: `(${o.kode_jenis}.${o.kode_objek}) ${o.nama_objek}` }))}
+                                options={objeks.data.map(o => ({ value: o.id, label: `(${o.kode_jenis}.${o.kode_objek}) ${o.nama_objek}` }))}
+                                error={formRincian.errors.master_objek_id}
                                 required
                             />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -430,6 +457,7 @@ export default function Index({ objeks, rincianObjeks, kategoris, filters, kelom
                                 <div className="space-y-1">
                                     <InputLabel value="Nama Rincian Objek" className="text-[10px] font-black text-gray-400 uppercase" />
                                     <TextInput value={formRincian.data.nama_rincian_objek} onChange={e => formRincian.setData('nama_rincian_objek', e.target.value.toUpperCase())} className="w-full" placeholder="ALAT BESAR DARAT..." required />
+                                    <InputError message={formRincian.errors.nama_rincian_objek} className="mt-2" />
                                 </div>
                             </div>
                         </>
@@ -441,7 +469,7 @@ export default function Index({ objeks, rincianObjeks, kategoris, filters, kelom
                                 label="PILIH RINCIAN OBJEK (LEVEL 5)"
                                 value={formKategori.data.master_rincian_objek_id}
                                 onChange={(val) => formKategori.setData('master_rincian_objek_id', val as string)}
-                                options={rincianObjeks.map(r => ({ value: r.id, label: `(${r.objek?.kode_jenis}.${r.objek?.kode_objek}.${r.kode_rincian_objek}) ${r.nama_rincian_objek}` }))}
+                                options={rincianObjeks.data.map(r => ({ value: r.id, label: `(${r.objek?.kode_jenis}.${r.objek?.kode_objek}.${r.kode_rincian_objek}) ${r.nama_rincian_objek}` }))}
                                 error={formKategori.errors.master_rincian_objek_id}
                                 required
                             />
@@ -450,6 +478,7 @@ export default function Index({ objeks, rincianObjeks, kategoris, filters, kelom
                                 <div className="space-y-1">
                                     <InputLabel value="Nama Kategori Barang" className="text-[10px] font-black text-gray-400 uppercase" />
                                     <TextInput value={formKategori.data.nama_kategori} onChange={e => formKategori.setData('nama_kategori', e.target.value.toUpperCase())} className="w-full" placeholder="TRAKTOR..." required />
+                                    <InputError message={formKategori.errors.nama_kategori} className="mt-2" />
                                 </div>
                             </div>
                         </>

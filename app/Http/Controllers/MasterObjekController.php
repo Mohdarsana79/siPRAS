@@ -13,7 +13,9 @@ class MasterObjekController extends Controller
             'kode_kelompok' => 'required|string|size:1',
             'kode_jenis' => 'required|string|size:1',
             'kode_objek' => 'required|string|size:2',
-            'nama_objek' => 'required|string|max:255',
+            'nama_objek' => 'required|string|max:255|unique:master_objeks,nama_objek',
+        ], [
+            'nama_objek.unique' => 'objek sudah ada',
         ]);
 
         MasterObjek::create($request->all());
@@ -27,7 +29,9 @@ class MasterObjekController extends Controller
             'kode_kelompok' => 'required|string|size:1',
             'kode_jenis' => 'required|string|size:1',
             'kode_objek' => 'required|string|size:2',
-            'nama_objek' => 'required|string|max:255',
+            'nama_objek' => 'required|string|max:255|unique:master_objeks,nama_objek,' . $master_objek->id,
+        ], [
+            'nama_objek.unique' => 'objek sudah ada',
         ]);
 
         $master_objek->update($request->all());
