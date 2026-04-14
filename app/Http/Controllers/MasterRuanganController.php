@@ -29,6 +29,14 @@ class MasterRuanganController extends Controller
         ]);
     }
 
+    /**
+     * Defensive show route - redirects back to index.
+     */
+    public function show()
+    {
+        return redirect()->route('master-ruangan.index');
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -57,6 +65,14 @@ class MasterRuanganController extends Controller
 
     public function destroy(MasterRuangan $master_ruangan)
     {
+        $directItems = $master_ruangan->itemsDirect()->limit(3)->pluck('nama_barang');
+        $linkedItems = $master_ruangan->itemsLinked()->limit(3)->pluck('nama_barang');
+        $combined = $directItems->concat($linkedItems)->unique()->take(3)->join(', ');
+
+        if ($combined) {
+            return redirect()->back()->with('error', "used:{$combined}");
+        }
+
         $master_ruangan->delete();
         return redirect()->route('master-ruangan.index')->with('success', 'Ruangan berhasil dihapus.');
     }

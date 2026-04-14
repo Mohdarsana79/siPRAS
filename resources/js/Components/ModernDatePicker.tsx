@@ -1,5 +1,5 @@
 import { useState, Fragment, useEffect } from 'react';
-import { Popover, Transition } from '@headlessui/react';
+import { Popover, Transition, Portal } from '@headlessui/react';
 
 interface ModernDatePickerProps {
     value: string;
@@ -184,8 +184,8 @@ export default function ModernDatePicker({
                     <>
                         <Popover.Button
                             id={id}
-                            className={`w-full flex items-center justify-between border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl py-2.5 px-4 bg-white shadow-sm transition-all text-left
-                                ${open ? 'ring-2 ring-indigo-500 border-transparent shadow-md' : 'border'}`}
+                            className={`w-full flex items-center justify-between border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md py-2 px-3 bg-white shadow-sm transition-all text-left
+                                ${open ? 'ring-1 ring-indigo-500 border-transparent shadow-md' : 'border'}`}
                         >
                             <span className={`text-sm ${selectedDate ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>
                                 {selectedDate ? formatDisplayDate(selectedDate) : placeholder}
@@ -198,14 +198,18 @@ export default function ModernDatePicker({
                         <Transition
                             as={Fragment}
                             enter="transition ease-out duration-200"
-                            enterFrom="opacity-0 translate-y-2 scale-95"
+                            enterFrom="opacity-0 translate-y-1 scale-95"
                             enterTo="opacity-100 translate-y-0 scale-100"
                             leave="transition ease-in duration-150"
                             leaveFrom="opacity-100 translate-y-0 scale-100"
-                            leaveTo="opacity-0 translate-y-2 scale-95"
+                            leaveTo="opacity-0 translate-y-1 scale-95"
                         >
-                            <Popover.Panel className="absolute z-[60] mt-3 w-80 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden backdrop-blur-xl">
-                                <div className="p-5">
+                            <Portal>
+                                <Popover.Panel 
+                                    anchor="bottom start"
+                                    className="z-[9999] mt-2 w-80 bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden backdrop-blur-xl [--anchor-gap:8px]"
+                                >
+                                    <div className="p-5">
                                     {/* Header */}
                                     <div className="flex items-center justify-between mb-6">
                                         <div className="flex gap-1">
@@ -304,7 +308,8 @@ export default function ModernDatePicker({
                                         </button>
                                     </div>
                                 </div>
-                            </Popover.Panel>
+                                </Popover.Panel>
+                            </Portal>
                         </Transition>
                     </>
                 )}

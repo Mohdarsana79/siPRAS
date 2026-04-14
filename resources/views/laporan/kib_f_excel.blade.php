@@ -50,6 +50,11 @@
             <td style="border: none;">:</td>
             <td style="border: none;">{{ strtoupper($profile->nama_sekolah ?? '________________') }}</td>
         </tr>
+        <tr>
+            <td style="border: none;">KODE LOKASI</td>
+            <td style="border: none;">:</td>
+            <td style="border: none;">{{ str_replace('XX', '06', $profile->kode_lokasi_bmd) . '.' . date('Y') }}</td>
+        </tr>
     </table>
 
     <table>
@@ -86,7 +91,7 @@
                 <td class="text-center">{{ $index + 1 }}</td>
                 <td>{{ $item->kibF->bangunan ?? $item->nama_barang }}</td>
                 <td class="text-center">{{ $item->kode_barang }}</td>
-                <td class="text-center">{{ $item->nomor_register }}</td>
+                <td class="text-center" style="mso-number-format:'\@';">{{ str_pad($item->nomor_register, 6, '0', STR_PAD_LEFT) }}</td>
                 <td class="text-center">{{ isset($item->kibF) ? ($item->kibF->konstruksi_bertingkat ? 'Ya' : 'Tdk') : '-' }}</td>
                 <td class="text-center">{{ isset($item->kibF) ? ($item->kibF->konstruksi_beton ? 'Ya' : 'Tdk') : '-' }}</td>
                 <td class="text-center">{{ $item->kibF->luas ?? '-' }}</td>

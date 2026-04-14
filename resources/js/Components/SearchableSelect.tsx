@@ -42,21 +42,21 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
     const customStyles: StylesConfig<Option, boolean, GroupBase<Option>> = {
         control: (base, state) => ({
             ...base,
-            backgroundColor: '#f9fafb', // gray-50
-            borderWidth: '0px',
-            borderRadius: '0.75rem', // rounded-xl
-            paddingTop: '0.45rem',
-            paddingBottom: '0.45rem',
-            paddingLeft: '0.5rem',
-            boxShadow: state.isFocused ? '0 0 0 4px rgba(16, 185, 129, 0.1)' : 'none', // emerald-500/10
-            borderColor: state.isFocused ? '#10b981' : '#f3f4f6', // emerald-500 : gray-100
+            backgroundColor: '#ffffff',
+            borderWidth: '1px',
+            borderRadius: '0.375rem',
+            paddingTop: '2px',
+            paddingBottom: '2px',
+            paddingLeft: '4px',
+            boxShadow: state.isFocused ? '0 0 0 1px #6366f1' : 'none',
+            borderColor: state.isFocused ? '#6366f1' : '#d1d5db',
             '&:hover': {
-                borderColor: '#10b981',
+                borderColor: '#6366f1',
             },
             transition: 'all 0.2s',
-            fontWeight: '900',
+            fontWeight: '500',
             fontSize: '0.875rem',
-            color: '#1f2937',
+            color: '#111827',
         }),
         menuPortal: (base) => ({
             ...base,
@@ -64,51 +64,51 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
         }),
         placeholder: (base) => ({
             ...base,
-            color: '#d1d5db', // gray-300
-            fontWeight: '700',
+            color: '#9ca3af',
+            fontWeight: '400',
         }),
         singleValue: (base) => ({
             ...base,
-            color: '#111827', // gray-900
-            fontWeight: '900',
+            color: '#111827',
+            fontWeight: '500',
         }),
         multiValue: (base) => ({
             ...base,
-            backgroundColor: '#ecfdf5', // emerald-50
-            borderRadius: '0.5rem',
-            padding: '2px',
+            backgroundColor: '#f3f4f6',
+            borderRadius: '0.375rem',
+            padding: '1px',
         }),
         multiValueLabel: (base) => ({
             ...base,
-            color: '#047857', // emerald-700
-            fontWeight: '900',
+            color: '#374151',
+            fontWeight: '600',
             fontSize: '0.75rem',
         }),
         multiValueRemove: (base) => ({
             ...base,
-            color: '#059669', // emerald-600
+            color: '#6b7280',
             ':hover': {
-                backgroundColor: '#d1fae5', // emerald-100
-                color: '#065f46', // emerald-800
+                backgroundColor: '#e5e7eb',
+                color: '#111827',
             },
         }),
         menu: (base) => ({
             ...base,
-            borderRadius: '1.5rem',
+            borderRadius: '0.375rem',
             overflow: 'hidden',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-            border: '1px solid #f3f4f6',
+            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+            border: '1px solid #e5e7eb',
             zIndex: 9999,
         }),
         option: (base, state) => ({
             ...base,
-            backgroundColor: state.isSelected ? '#10b981' : state.isFocused ? '#ecfdf5' : 'white',
+            backgroundColor: state.isSelected ? '#6366f1' : state.isFocused ? '#f3f4f6' : 'white',
             color: state.isSelected ? 'white' : '#374151',
-            fontWeight: state.isSelected ? '900' : '700',
+            fontWeight: state.isSelected ? '600' : '400',
             fontSize: '0.8125rem',
-            padding: '10px 20px',
+            padding: '8px 16px',
             '&:active': {
-                backgroundColor: '#10b981',
+                backgroundColor: '#6366f1',
             },
         }),
         indicatorSeparator: () => ({ display: 'none' }),
@@ -116,7 +116,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
             ...base,
             color: '#9ca3af',
             '&:hover': {
-                color: '#6b7280',
+                color: '#4b5563',
             }
         }),
         input: (base) => ({

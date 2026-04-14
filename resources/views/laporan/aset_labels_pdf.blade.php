@@ -2,119 +2,161 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Stiker Label Aset</title>
+    <title>Stiker Label Aset Premium</title>
     <style>
         @page { 
-            margin: 1cm;
+            margin: 0.5cm;
         }
         body { 
             font-family: 'Helvetica', 'Arial', sans-serif; 
             margin: 0; 
-            padding: 0; 
+            padding: 0;
+            background-color: #ffffff;
         }
         .grid-table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 10px;
+            border-spacing: 12px;
         }
         .label-card {
-            width: 9.5cm;
-            height: 5.2cm;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
+            width: 9.3cm;
+            height: 5.4cm;
+            border: 1.5px solid #334155;
+            border-radius: 8px;
             overflow: hidden;
             background-color: #ffffff;
             position: relative;
         }
         
-        /* Warna Aksen per KIB */
-        .header-strip { height: 10px; width: 100%; }
-        .bg-A { background-color: #2563eb; }
-        .bg-B { background-color: #4f46e5; }
-        .bg-C { background-color: #10b981; }
-        .bg-D { background-color: #f59e0b; }
-        .bg-E { background-color: #0d9488; }
-        .bg-F { background-color: #e11d48; }
-        .bg-default { background-color: #64748b; }
+        /* Warna Aksen per KIB (Left Border + Top Badge) */
+        .accent-border { 
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 8px;
+        }
+        .bg-A { background-color: #1e40af; } /* Blue */
+        .bg-B { background-color: #4338ca; } /* Indigo */
+        .bg-C { background-color: #047857; } /* Green */
+        .bg-D { background-color: #b45309; } /* Amber */
+        .bg-E { background-color: #0f766e; } /* Teal */
+        .bg-F { background-color: #be123c; } /* Rose */
+        .bg-default { background-color: #475569; }
 
-        .card-body {
-            padding: 12px 15px;
+        .card-content {
+            margin-left: 12px;
+            padding: 10px 12px;
+            height: 100%;
         }
 
-        .school-info {
-            font-size: 10px;
-            font-weight: bold;
+        .header {
+            border-bottom: 1.5px solid #e2e8f0;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .school-name {
+            font-size: 9pt;
+            font-weight: 800;
+            color: #0f172a;
             text-transform: uppercase;
-            color: #1e293b;
-            margin-bottom: 2px;
-            border-bottom: 1px solid #f1f5f9;
-            padding-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+
+        .region-info {
+            font-size: 6.5pt;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-top: 1px;
+        }
+
+        .kib-tag {
+            position: absolute;
+            right: 0;
+            top: 0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 7pt;
+            font-weight: 900;
+            text-transform: uppercase;
         }
 
         .asset-name {
-            font-size: 14px;
-            font-weight: 800;
-            color: #0f172a;
-            margin-top: 10px;
-            margin-bottom: 15px;
-            display: block;
-            height: 20px;
+            font-size: 11pt;
+            font-weight: 900;
+            color: #1e293b;
+            margin: 6px 0;
+            height: 32px;
+            line-height: 1.2;
             overflow: hidden;
-        }
-
-        .info-table {
-            width: 100%;
-            border: none;
-        }
-        .info-table td {
-            border: none;
-            padding: 2px 0;
-            vertical-align: top;
-        }
-
-        .label-text {
-            font-size: 8px;
-            font-weight: 700;
-            color: #64748b;
             text-transform: uppercase;
         }
 
-        .value-text {
-            font-size: 10px;
-            font-weight: 600;
-            color: #334155;
+        .meta-grid {
+            width: 100%;
+            margin-top: 5px;
         }
 
-        .qr-section {
-            width: 80px;
-            text-align: right;
+        .label-text {
+            font-size: 6pt;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 1px;
         }
-        .qr-box {
-            padding: 5px;
-            background: #fff;
-            border: 1px solid #f1f5f9;
-            border-radius: 10px;
+
+        .value-code {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 8pt;
+            font-weight: 900;
+            color: #0f172a;
+            background: #f8fafc;
+            padding: 2px 4px;
+            border-radius: 3px;
+            display: inline-block;
+            letter-spacing: 0.5px;
+        }
+
+        .value-text {
+            font-size: 8.5pt;
+            font-weight: 700;
+            color: #334155;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .qr-column {
+            width: 75px;
+            text-align: right;
+            vertical-align: bottom;
+            padding-bottom: 5px;
+        }
+
+        .qr-wrapper {
+            background: #ffffff;
+            padding: 4px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
             display: inline-block;
         }
 
-        .kib-badge {
-            position: absolute;
-            bottom: 15px;
-            right: 15px;
-            font-size: 8px;
-            font-weight: 900;
-            padding: 3px 10px;
-            border-radius: 20px;
-            color: #fff;
+        .footer-id {
+            margin-top: 4px;
+            font-size: 5.5pt;
+            color: #94a3b8;
+            font-weight: 800;
+            text-align: center;
         }
-        
-        .footer-text {
-            position: absolute;
-            bottom: 12px;
-            left: 15px;
-            font-size: 7px;
-            color: #cbd5e1;
-            font-weight: bold;
+
+        .barcode-strip {
+             margin-top: 8px;
+             border-top: 1px dashed #e2e8f0;
+             padding-top: 5px;
         }
     </style>
 </head>
@@ -129,53 +171,58 @@
                         $bgClass = 'bg-' . $tipe;
                         
                         $merk = '-';
-                        if ($tipe === 'B') $merk = $item->kibB->merk_type ?? '-';
-                        if ($tipe === 'C') $merk = $item->kibC->konstruksi ?? '-';
-                        if ($tipe === 'D') $merk = $item->kibD->konstruksi ?? '-';
+                        if ($tipe === 'B' && $item->kibB) $merk = $item->kibB->merk_tipe ?? '-';
+                        if ($tipe === 'C' && $item->kibC) $merk = $item->kibC->konstruksi ?? '-';
+                        if ($tipe === 'D' && $item->kibD) $merk = $item->kibD->konstruksi ?? '-';
                     @endphp
                     <td>
                         <div class="label-card">
-                            <div class="header-strip {{ $bgClass }}"></div>
+                            <div class="accent-border {{ $bgClass }}"></div>
                             
-                            <div class="card-body">
-                                <div class="school-info">
-                                    {{ $profile->nama_sekolah ?? 'NAMA SEKOLAH' }}
-                                    <div style="font-size: 7px; color: #94a3b8; font-weight: normal; margin-top: 1px;">
-                                        PEMERINTAH {{ strtoupper($profile->tipe_wilayah ?? 'KABUPATEN') }} {{ strtoupper($profile->kabupaten_kota ?? 'DAERAH') }}
+                            <div class="card-content">
+                                <div class="header">
+                                    <div class="school-name">{{ $profile->nama_sekolah ?? 'DINAS PENDIDIKAN' }}</div>
+                                    <div class="region-info">
+                                        {{ $profile->tipe_wilayah ?? 'KAB' }} {{ $profile->kabupaten_kota ?? 'ASSET' }} • UNIT: {{ $profile->kode_unit ?? '00000' }}
                                     </div>
-                                    
-                                    <!-- PINDAHKAN BADGE KE ATAS KANAN AGAR TIDAK MENUTUPI QR -->
-                                    <div class="kib-badge {{ $bgClass }}" style="position: absolute; top: 15px; right: 15px; bottom: auto;">
-                                        KIB {{ $tipe }}
-                                    </div>
+                                    <div class="kib-tag {{ $bgClass }}">KIB {{ $tipe }}</div>
                                 </div>
 
-                                <div class="asset-name">{{ $item->nama_barang }}</div>
+                                <div class="asset-name">{{ Str::limit($item->nama_barang, 40) }}</div>
 
-                                <table class="info-table">
+                                <table style="width: 100%; border: none;">
                                     <tr>
-                                        <td>
-                                            <div class="info-box">
-                                                <div class="label-text">KODE BARANG</div>
-                                                <div class="value-text">{{ $item->kode_barang }}</div>
+                                        <td style="vertical-align: top;">
+                                            <div style="margin-bottom: 6px;">
+                                                <div class="label-text">KODE LOKASI (BARIS 1)</div>
+                                                <div class="value-code">{{ $item->kode_lokasi_full }}</div>
                                             </div>
-                                            <div style="margin-top: 8px;">
-                                                <div class="label-text">MERK / SPEK</div>
-                                                <div class="value-text">{{ $merk }}</div>
+                                            <div style="margin-bottom: 6px;">
+                                                <div class="label-text">KODE BARANG (BARIS 2)</div>
+                                                <div class="value-code" style="color: #1d4ed8;">{{ $item->kode_barang_full }}</div>
                                             </div>
-                                            <div style="margin-top: 8px;">
-                                                <div class="label-text">LOKASI / ASAL</div>
-                                                <div class="value-text">{{ $item->ruangan->nama ?? '-' }} • {{ $item->asal_usul ?? '-' }}</div>
-                                            </div>
+                                            
+                                            <table style="width: 100%; border: none; margin-top: 4px;">
+                                                <tr>
+                                                    <td width="55%">
+                                                        <div class="label-text">MERK / SPESIFIKASI</div>
+                                                        <div class="value-text">{{ Str::limit($merk, 25) }}</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="label-text">RUANGAN</div>
+                                                        <div class="value-text">{{ $item->ruangan->nama_ruangan?? '-' }}</div>
+                                                    </td>
+                                                </tr>
+                                            </table>
                                         </td>
-                                        <td class="qr-section">
-                                            <div class="qr-box">
+                                        <td class="qr-column">
+                                            <div class="qr-wrapper">
                                                 @php
                                                     $qrcode = \SimpleSoftwareIO\QrCode\Facades\QrCode::size(120)->margin(0)->generate($item->id);
                                                 @endphp
                                                 <img src="data:image/svg+xml;base64,{{ base64_encode($qrcode) }}" style="width: 70px; height: 70px;">
                                             </div>
-                                            <div style="font-size: 6px; color: #94a3b8; font-weight: bold; margin-top: 5px; text-align: center;">ASSET ID: {{ substr($item->id, 0, 8) }}</div>
+                                            <div class="footer-id">ID: {{ strtoupper(substr($item->id, 0, 8)) }}</div>
                                         </td>
                                     </tr>
                                 </table>
@@ -185,7 +232,7 @@
                 @endforeach
                 
                 @if(count($row) < 2)
-                    <td></td>
+                    <td style="width: 9.3cm;"></td>
                 @endif
             </tr>
         @endforeach

@@ -7,12 +7,16 @@ use App\Models\KibCGedung;
 use App\Models\MasterKategori;
 use App\Models\MasterRuangan;
 use App\Models\MasterSumberDana;
+use App\Services\KodeRegistrasiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
 class KibCGedungController extends Controller
 {
+    public function __construct(private KodeRegistrasiService $kodeService) {}
+
     public function index(Request $request)
     {
         $query = Item::with(['kibC', 'kategori', 'ruangan', 'ruangans', 'sumberDana'])
@@ -44,6 +48,14 @@ class KibCGedungController extends Controller
         ]);
     }
 
+    /**
+     * Defensive show route.
+     */
+    public function show()
+    {
+        return redirect()->route('kib-c.index');
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -52,14 +64,13 @@ class KibCGedungController extends Controller
             'ruangan_id' => 'nullable|array',
             'ruangan_id.*' => 'exists:master_ruangans,id',
             'sumber_dana_id' => 'required|exists:master_sumber_danas,id',
-            'kode_barang' => 'required|string|max:255',
             'nama_barang' => 'required|string|max:255',
-            'nomor_register' => 'required|string|max:255',
             'kondisi' => 'required|in:Baik,Kurang Baik,Rusak Berat',
             'tanggal_perolehan' => 'required|date',
             'harga' => 'required|numeric|min:0',
             'asal_usul' => 'required|string|max:255',
             'keterangan' => 'nullable|string',
+            'kode_komptabel' => 'required|in:01,02',
             
             // Validasi spesifik KIB C
             'kondisi_bangunan' => 'required|string|max:255',
@@ -67,8 +78,8 @@ class KibCGedungController extends Controller
             'konstruksi_beton' => 'required|boolean',
             'luas_lantai' => 'required|numeric|min:0',
             'letak_alamat' => 'required|string',
-            'dokumen_tanggal' => 'required|date',
-            'dokumen_nomor' => 'required|string|max:255',
+            'dokumen_tanggal' => 'nullable|date',
+            'dokumen_nomor' => 'nullable|string|max:255',
             'status_tanah' => 'required|string|max:255',
             'kode_tanah' => 'nullable|string|max:255',
         ]);
@@ -76,12 +87,15 @@ class KibCGedungController extends Controller
         DB::beginTransaction();
 
         try {
-            $itemData = $request->only([
-                'kategori_id', 'sumber_dana_id', 'kode_barang',
-                'nama_barang', 'nomor_register', 'kondisi', 'tanggal_perolehan',
-                'harga', 'asal_usul', 'keterangan'
-            ]);
-            $itemData['ruangan_id'] = null;
+            $kodeData = $this->kodeService->generateForNewItem(
+                $request->kategori_id,
+                $request->tanggal_perolehan
+            );
+            $itemData = array_merge(
+                $request->only(['kategori_id', 'sumber_dana_id', 'nama_barang', 'kondisi', 'tanggal_perolehan', 'harga', 'asal_usul', 'keterangan', 'kode_komptabel']),
+                $kodeData,
+                ['ruangan_id' => null]
+            );
             $item = Item::create($itemData);
 
             if ($request->has('ruangan_id')) {
@@ -103,10 +117,10 @@ class KibCGedungController extends Controller
 
             DB::commit();
 
-            return redirect()->route('kib-c.index')->with('success', 'Data KIB C berhasil ditambahkan.');
+            return Redirect::route('kib-c.index')->with('success', 'Data KIB C berhasil ditambahkan.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Gagal menyimpan data: ' . $e->getMessage()]);
+            return Redirect::back()->withErrors(['error' => 'Gagal menyimpan data: ' . $e->getMessage()]);
         }
     }
 
@@ -126,6 +140,7 @@ class KibCGedungController extends Controller
             'harga' => 'required|numeric|min:0',
             'asal_usul' => 'required|string|max:255',
             'keterangan' => 'nullable|string',
+            'kode_komptabel' => 'required|in:01,02',
             
             // Validasi spesifik KIB C
             'kondisi_bangunan' => 'required|string|max:255',
@@ -133,8 +148,8 @@ class KibCGedungController extends Controller
             'konstruksi_beton' => 'required|boolean',
             'luas_lantai' => 'required|numeric|min:0',
             'letak_alamat' => 'required|string',
-            'dokumen_tanggal' => 'required|date',
-            'dokumen_nomor' => 'required|string|max:255',
+            'dokumen_tanggal' => 'nullable|date',
+            'dokumen_nomor' => 'nullable|string|max:255',
             'status_tanah' => 'required|string|max:255',
             'kode_tanah' => 'nullable|string|max:255',
         ]);
@@ -142,14 +157,17 @@ class KibCGedungController extends Controller
         DB::beginTransaction();
 
         try {
-            $itemData = $request->only([
-                'kategori_id', 'sumber_dana_id', 'kode_barang',
-                'nama_barang', 'nomor_register', 'kondisi', 'tanggal_perolehan',
-                'harga', 'asal_usul', 'keterangan'
-            ]);
-            $itemData['ruangan_id'] = null;
-
             $item = Item::findOrFail($id);
+            $kodeData = $this->kodeService->generateForUpdate(
+                $item,
+                $request->kategori_id,
+                $request->tanggal_perolehan
+            );
+            $itemData = array_merge(
+                $request->only(['kategori_id', 'sumber_dana_id', 'nama_barang', 'kondisi', 'tanggal_perolehan', 'harga', 'asal_usul', 'keterangan', 'kode_komptabel']),
+                $kodeData,
+                ['ruangan_id' => null]
+            );
             $item->update($itemData);
 
             if ($request->has('ruangan_id')) {
@@ -171,10 +189,10 @@ class KibCGedungController extends Controller
 
             DB::commit();
 
-            return redirect()->route('kib-c.index')->with('success', 'Data KIB C berhasil diupdate.');
+            return Redirect::route('kib-c.index')->with('success', 'Data KIB C berhasil diupdate.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Gagal mengupdate data: ' . $e->getMessage()]);
+            return Redirect::back()->withErrors(['error' => 'Gagal mengupdate data: ' . $e->getMessage()]);
         }
     }
 
@@ -183,6 +201,6 @@ class KibCGedungController extends Controller
         $item = Item::findOrFail($id);
         $item->delete(); 
         
-        return redirect()->route('kib-c.index')->with('success', 'Data KIB C berhasil dihapus.');
+        return Redirect::route('kib-c.index')->with('success', 'Data KIB C berhasil dihapus.');
     }
 }

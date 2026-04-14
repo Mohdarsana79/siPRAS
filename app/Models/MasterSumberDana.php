@@ -12,4 +12,9 @@ class MasterSumberDana extends Model
         'kode',
         'nama_sumber'
     ];
+
+    public function items()
+    {
+        return $this->hasMany(Item::class, 'sumber_dana_id');
+    }
 }

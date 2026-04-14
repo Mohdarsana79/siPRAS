@@ -23,6 +23,14 @@ class PeminjamanController extends Controller
         ]);
     }
 
+    /**
+     * Defensive show route.
+     */
+    public function show()
+    {
+        return redirect()->route('peminjaman.index');
+    }
+
     public function store(Request $request)
     {
         $request->validate([

@@ -2,6 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
 import React, { useState } from 'react';
 import Modal from '@/Components/Modal';
+import FormModal from '@/Components/FormModal';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -25,7 +26,7 @@ interface KibA {
     penggunaan: string;
 }
 
-interface Kategori { id: number; nama_kategori: string; kode_kategori: string; }
+interface Kategori { id: number; nama_kategori: string; kode_barang: string; }
 interface Ruangan { id: number; nama_ruangan: string; kode_ruangan: string; }
 interface SumberDana { id: number; nama_sumber: string; }
 
@@ -55,6 +56,11 @@ interface Item {
     ruangan?: Ruangan;
     ruangans?: Ruangan[];
     sumber_dana?: SumberDana;
+    label_bmd?: string;
+    identitas_barang?: string;
+    kode_lokasi_full?: string;
+    kode_barang_full?: string;
+    kode_komptabel?: string;
 }
 
 const Icons = {
@@ -123,6 +129,7 @@ export default function Index({ items, kategoris, ruangans, sumberDanas, filters
         tanggal_sertifikat: '',
         nomor_sertifikat: '',
         penggunaan: '',
+        kode_komptabel: '01',
     });
 
     useEffect(() => {
@@ -155,6 +162,7 @@ export default function Index({ items, kategoris, ruangans, sumberDanas, filters
                 tanggal_sertifikat: item.kib_a?.tanggal_sertifikat || '',
                 nomor_sertifikat: item.kib_a?.nomor_sertifikat || '',
                 penggunaan: item.kib_a?.penggunaan || '',
+                kode_komptabel: item.kode_komptabel || '01',
             });
         } else {
             setIsEditing(false);
@@ -163,6 +171,7 @@ export default function Index({ items, kategoris, ruangans, sumberDanas, filters
             // Default select
             if (kategoris.length > 0) setData('kategori_id', kategoris[0].id);
             if (sumberDanas.length > 0) setData('sumber_dana_id', sumberDanas[0].id);
+            setData('kode_komptabel', '01');
         }
         setIsModalOpen(true);
     };
@@ -230,7 +239,7 @@ export default function Index({ items, kategoris, ruangans, sumberDanas, filters
         >
             <Head title="KIB A - Tanah" />
 
-            <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 space-y-4">
+            <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 space-y-4 text-[9pt]">
 
                 {/* Main Content Card */}
                 <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
@@ -269,7 +278,7 @@ export default function Index({ items, kategoris, ruangans, sumberDanas, filters
                                     <th className="px-6 py-4 font-black text-white/90 uppercase tracking-widest text-[10px]">Luas & Lokasi</th>
                                     <th className="px-6 py-4 font-black text-white/90 uppercase tracking-widest text-[10px]">Legalitas</th>
                                     <th className="px-6 py-4 font-black text-white/90 uppercase tracking-widest text-[10px]">Perolehan</th>
-                                    <th className="px-6 py-4 font-black text-white/90 uppercase tracking-widest text-[10px] text-right text-transparent">Opsi</th>
+                                    <th className="px-6 py-4 font-black text-white/90 uppercase tracking-widest text-[10px] text-right">Opsi</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
@@ -279,15 +288,21 @@ export default function Index({ items, kategoris, ruangans, sumberDanas, filters
                                             <div className="flex flex-col">
                                                 <span className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors uppercase tracking-tight leading-tight">{item.nama_barang}</span>
                                                 <div className="flex items-center gap-2 mt-1">
-                                                    <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded leading-none">{item.kode_barang}</span>
-                                                    <span className="text-[10px] font-black text-blue-500 uppercase tracking-tighter">Reg: {item.nomor_register}</span>
+                                                    <div className="flex flex-col gap-1">
+                                                        <span className="text-[9px] font-mono font-bold text-blue-700 bg-blue-50/50 px-2 py-0.5 rounded border border-blue-100/50 w-fit">
+                                                            {item.kode_lokasi_full}
+                                                        </span>
+                                                        <span className="text-[10px] font-mono font-black text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100 w-fit">
+                                                            {item.kode_barang_full}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-5">
                                             <div className="flex flex-col">
                                                 <span className="font-black text-indigo-600 text-xs">{formatLuas(item.kib_a?.luas)} m²</span>
-                                                <span className="text-xs text-xs text-gray-500 mt-1 line-clamp-1 max-w-[200px]" title={item.kib_a?.letak_alamat}>{item.kib_a?.letak_alamat}</span>
+                                                <span className="text-xs text-gray-500 mt-1 line-clamp-1 max-w-[200px]" title={item.kib_a?.letak_alamat}>{item.kib_a?.letak_alamat}</span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-5">
@@ -361,301 +376,331 @@ export default function Index({ items, kategoris, ruangans, sumberDanas, filters
 
             </div>
 
-            {/* Premium Colorful Modal - Add / Edit */}
-            <Modal show={isModalOpen} onClose={closeModal} maxWidth="6xl">
-                <div className="bg-white/95 backdrop-blur-xl max-h-[90vh] overflow-y-auto custom-scrollbar rounded-[2.5rem]">
-                    {/* Artistic Header */}
-                    <div className={`px-8 pt-10 pb-12 relative flex flex-col items-center text-center overflow-hidden ${isEditing ? 'bg-gradient-to-br from-indigo-600 via-blue-600 to-indigo-700' : 'bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700'}`}>
-                        {/* Decorative Background Circles */}
-                        <div className="absolute top-0 right-0 -mr-10 -mt-10 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
-                        <div className="absolute bottom-0 left-0 -ml-10 -mb-10 w-48 h-48 bg-black/10 rounded-full blur-3xl"></div>
-
-                        <div className="w-20 h-20 rounded-[2rem] bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center mb-5 shadow-2xl relative z-10">
-                            {isEditing ? <Icons.Edit className="w-8 h-8 text-white" /> : <Icons.Plus className="w-8 h-8 text-white" />}
+            {/* Form Modal - Add / Edit */}
+            <FormModal
+                show={isModalOpen}
+                onClose={closeModal}
+                title={isEditing ? 'Edit Aset Tanah' : 'Tambah Aset Tanah'}
+                subtitle="Kartu Inventaris Barang — KIB A"
+                icon={isEditing ? <Icons.Edit className="w-5 h-5" /> : <Icons.Plus className="w-5 h-5" />}
+                accentColor="blue"
+                headerVariant="gradient"
+                maxWidth="5xl"
+                onSubmit={submit}
+                submitLabel={isEditing ? 'Simpan Perubahan' : 'Tambah Data'}
+                processing={processing}
+                bodyClassName="text-[9pt]"
+            >
+                <div className="space-y-8">
+                    {/* section: Informasi Identitas */}
+                    <div className="space-y-5">
+                            <h4 className="text-[10pt] font-bold text-gray-800 tracking-tight">IDENTITAS ASET</h4>
                         </div>
-
-                        <h3 className="text-2xl font-black text-white tracking-tight relative z-10 uppercase">
-                            {isEditing ? 'UPDATE ASET TANAH' : 'TAMBAH ASET TANAH'}
-                        </h3>
-                        <p className="text-white/80 text-[10px] font-bold uppercase tracking-[0.3em] mt-2 relative z-10">
-                            Pencatatan Kartu Inventaris Barang - KIB A
-                        </p>
-                    </div>
-
-                    <form onSubmit={submit} className="px-8 pb-8 -mt-6 bg-white rounded-t-[2.5rem] relative z-20 pt-8">
-                        <div className="grid grid-cols-1 md:grid-cols-12 gap-x-12 gap-y-5">
-
-                            {/* Left Column: General Info */}
-                            <div className="space-y-4 md:col-span-6">
-                                <h4 className="flex items-center gap-2 text-[10px] font-black text-blue-500 uppercase tracking-[0.2em] mb-4">
-                                    <div className="w-6 h-px bg-blue-100"></div> Informasi Utama
-                                </h4>
-
-                                <div className="group/field relative">
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-5">
+                                <div className="group">
                                     <SearchableSelect
-                                        label="KATEGORI BARANG"
+                                        label="KATEGORI BARANG (LEVEL 1-6)"
                                         value={data.kategori_id}
                                         onChange={(val) => setData('kategori_id', val)}
-                                        options={kategoris.map(k => ({ value: k.id, label: `${k.kode_kategori} - ${k.nama_kategori}` }))}
+                                        options={kategoris.map(k => ({ value: k.id, label: `${k.kode_barang} - ${k.nama_kategori}` }))}
                                         error={errors.kategori_id}
                                         required
                                     />
+                                    <p className="text-[9pt] text-blue-500 mt-1.5 font-bold italic opacity-80 leading-tight">
+                                        * Level 7 (Sub-sub rincian) direkam otomatis di sistem KIB.
+                                    </p>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <InputLabel htmlFor="nama_barang" value="NAMA LENGKAP ASET" className="text-[9pt] font-semibold text-gray-500" />
+                                    <TextInput 
+                                        id="nama_barang" 
+                                        className="text-[9pt]" 
+                                        value={data.nama_barang} 
+                                        onChange={(e) => setData('nama_barang', e.target.value.toUpperCase())} 
+                                        required 
+                                        placeholder="CONTOH: TANAH BANGUNAN SEKOLAH..." 
+                                    />
+                                    <InputError message={errors.nama_barang} className="mt-1 text-[9pt] font-bold" />
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="group/field relative">
-                                        <InputLabel htmlFor="kode_barang" value="KODE BARANG" className="mb-1.5 ml-1 text-[10px] font-black text-gray-400 tracking-widest" />
-                                        <TextInput id="kode_barang" className="w-full px-4 rounded-xl border-gray-100 bg-gray-50 py-2.5 font-black text-gray-800 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all text-sm uppercase tracking-widest" value={data.kode_barang} onChange={(e) => setData('kode_barang', e.target.value)} required placeholder="KODE..." />
-                                        <InputError message={errors.kode_barang} className="mt-2 text-[10px] font-bold" />
+                                    <div className="space-y-1">
+                                        <InputLabel value="KODE BARANG" className="text-[9pt] font-semibold text-gray-500" />
+                                        <TextInput className="bg-gray-50 text-gray-500 cursor-not-allowed text-[9pt]" value={data.kode_barang || 'AUTO'} readOnly />
                                     </div>
-                                    <div className="group/field relative">
-                                        <InputLabel htmlFor="nomor_register" value="NO. REGISTER" className="mb-1.5 ml-1 text-[10px] font-black text-gray-400 tracking-widest" />
-                                        <TextInput id="nomor_register" className="w-full px-4 rounded-xl border-gray-100 bg-gray-50 py-2.5 font-black text-gray-800 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all text-sm uppercase tracking-widest" value={data.nomor_register} onChange={(e) => setData('nomor_register', e.target.value)} required placeholder="REG..." />
-                                        <InputError message={errors.nomor_register} className="mt-2 text-[10px] font-bold" />
+                                    <div className="space-y-1">
+                                        <InputLabel value="NO. REGISTER" className="text-[9pt] font-semibold text-gray-500" />
+                                        <TextInput className="bg-gray-50 text-gray-500 cursor-not-allowed text-[9pt]" value={data.nomor_register || 'AUTO'} readOnly />
                                     </div>
                                 </div>
+                            </div>
 
-                                <div className="group/field relative">
-                                    <InputLabel htmlFor="nama_barang" value="NAMA LENGKAP ASET" className="mb-1.5 ml-1 text-[10px] font-black text-gray-400 tracking-widest" />
-                                    <TextInput id="nama_barang" className="w-full px-4 rounded-xl border-gray-100 bg-gray-50 py-2.5 font-black text-gray-800 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all text-sm" value={data.nama_barang} onChange={(e) => setData('nama_barang', e.target.value)} required placeholder="MASUKKAN NAMA TANAH / LAHAN..." />
-                                    <InputError message={errors.nama_barang} className="mt-2 text-[10px] font-bold" />
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="group/field relative">
-                                        <SearchableSelect
-                                            label="KONDISI"
-                                            value={data.kondisi}
-                                            onChange={(val) => setData('kondisi', val as string)}
-                                            options={[
-                                                { value: 'Baik', label: 'BAIK' },
-                                                { value: 'Kurang Baik', label: 'KURANG BAIK' },
-                                                { value: 'Rusak Berat', label: 'RUSAK BERAT' },
-                                            ]}
-                                        />
-                                    </div>
-                                    <div className="group/field relative">
-                                        <InputLabel htmlFor="tanggal_perolehan" value="TGL PEROLEHAN" className="mb-1.5 ml-1 text-[10px] font-black text-gray-400 tracking-widest" />
+                            <div className="space-y-5 px-4 py-4 bg-gray-50/50 rounded-2xl border border-dashed border-gray-200">
+                                <SearchableSelect
+                                    label="SUMBER DANA"
+                                    value={data.sumber_dana_id}
+                                    onChange={(val) => setData('sumber_dana_id', val)}
+                                    options={sumberDanas.map(s => ({ value: s.id, label: s.nama_sumber }))}
+                                    error={errors.sumber_dana_id}
+                                    required
+                                />
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-5">
+                                    <SearchableSelect
+                                        label="KONDISI"
+                                        value={data.kondisi}
+                                        onChange={(val) => setData('kondisi', val as string)}
+                                        options={[
+                                            { value: 'Baik', label: 'BAIK' },
+                                            { value: 'Kurang Baik', label: 'KURANG BAIK' },
+                                            { value: 'Rusak Berat', label: 'RUSAK BERAT' },
+                                        ]}
+                                    />
+                                    <div className="space-y-1">
+                                        <InputLabel htmlFor="tanggal_perolehan" value="TGL PEROLEHAN" className="text-[9pt] font-semibold text-gray-500" />
                                         <ModernDatePicker
                                             id="tanggal_perolehan"
                                             value={data.tanggal_perolehan}
                                             onChange={(date) => setData('tanggal_perolehan', date)}
                                         />
-                                        <InputError message={errors.tanggal_perolehan} className="mt-2 text-[10px] font-bold" />
+                                        <InputError message={errors.tanggal_perolehan} className="mt-1 text-[9pt] font-bold" />
                                     </div>
-                                </div>
-
-                                <div className="group/field relative">
-                                    <InputLabel htmlFor="harga" value="NILAI HARGA / PEROLEHAN (RP)" className="mb-1.5 ml-1 text-[10px] font-black text-gray-400 tracking-widest" />
-                                    <TextInput
-                                        id="harga"
-                                        type="text"
-                                        className="w-full px-4 rounded-xl border-gray-100 bg-gray-50 py-2.5 font-black text-gray-800 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all text-sm uppercase placeholder:text-gray-300 tracking-widest"
-                                        value={data.harga ? new Intl.NumberFormat('id-ID').format(Number(data.harga)) : ''}
-                                        onChange={(e) => setData('harga', e.target.value.replace(/\D/g, ''))}
-                                        required
-                                        placeholder="0"
-                                    />
-                                    <InputError message={errors.harga} className="mt-2 text-[10px] font-bold" />
-                                </div>
-
-                                <div className="group/field relative">
-                                    <SearchableSelect
-                                        label="SUMBER DANA"
-                                        value={data.sumber_dana_id}
-                                        onChange={(val) => setData('sumber_dana_id', val)}
-                                        options={sumberDanas.map(s => ({ value: s.id, label: s.nama_sumber }))}
-                                        error={errors.sumber_dana_id}
-                                        required
-                                    />
-                                </div>
-                                
-                                <div className="group/field relative">
-                                    <InputLabel htmlFor="asal_usul" value="ASAL USUL" className="mb-1.5 ml-1 text-[10px] font-black text-gray-400 tracking-widest" />
-                                    <TextInput id="asal_usul" className="w-full px-4 rounded-xl border-gray-100 bg-gray-50 py-2.5 font-black text-gray-800 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all text-sm uppercase tracking-widest" value={data.asal_usul} onChange={(e) => setData('asal_usul', e.target.value)} required placeholder="MISAL: PEMBELIAN / HIBAH..." />
-                                    <InputError message={errors.asal_usul} className="mt-2 text-[10px] font-bold" />
+                                    <div className="space-y-1">
+                                        <InputLabel htmlFor="asal_usul" value="ASAL USUL" className="text-[9pt] font-semibold text-gray-500" />
+                                        <TextInput
+                                            id="asal_usul"
+                                            className="text-[9pt] uppercase"
+                                            value={data.asal_usul}
+                                            onChange={(e) => setData('asal_usul', e.target.value)}
+                                            required
+                                            placeholder="PEMBELIAN..."
+                                        />
+                                        <InputError message={errors.asal_usul} className="mt-1 text-[9pt] font-bold" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <InputLabel htmlFor="harga" value="NILAI HARGA (RP)" className="text-[9pt] font-semibold text-gray-500" />
+                                        <TextInput
+                                            id="harga"
+                                            className="font-bold text-indigo-600 text-[9pt]"
+                                            value={data.harga ? new Intl.NumberFormat('id-ID').format(Number(data.harga)) : ''}
+                                            onChange={(e) => setData('harga', e.target.value.replace(/\D/g, ''))}
+                                            required
+                                            placeholder="0"
+                                        />
+                                        <InputError message={errors.harga} className="mt-1 text-[9pt] font-bold" />
+                                    </div>
                                 </div>
                             </div>
+                        </div>
 
-                            {/* Right Column: KIB Specific */}
-                            <div className="space-y-4 md:col-span-6">
-                                <h4 className="flex items-center gap-2 text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em] mb-4">
-                                    <div className="w-6 h-px bg-indigo-100"></div> Spesifikasi KIB A
-                                </h4>
+                    {/* section: Spesifikasi Teknis */}
+                    <div className="space-y-5 p-6 bg-indigo-50/30 rounded-3xl border border-indigo-100/50">
+                            <h4 className="text-[10pt] font-bold text-gray-800 tracking-tight uppercase">Detail Spesifikasi KIB A</h4>
 
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="space-y-1">
+                                <InputLabel htmlFor="luas" value="LUAS TANAH (M²)" className="text-[9pt] font-semibold text-gray-500" />
+                                <TextInput id="luas" className="text-[11pt]" value={data.luas} onChange={(e) => setData('luas', e.target.value)} required placeholder="0.00" />
+                                <InputError message={errors.luas} className="mt-1 text-[9pt] font-bold" />
+                            </div>
+                            <div className="space-y-1">
+                                <InputLabel htmlFor="hak_tanah" value="STATUS HAK" className="text-[9pt] font-semibold text-gray-500" />
+                                <TextInput id="hak_tanah" className="text-[11pt] uppercase" value={data.hak_tanah} onChange={(e) => setData('hak_tanah', e.target.value)} required placeholder="MISAL: HAK PAKAI" />
+                            </div>
+                            <div className="space-y-1">
+                                <InputLabel htmlFor="penggunaan" value="TUJUAN PENGGUNAAN" className="text-[9pt] font-semibold text-gray-500" />
+                                <TextInput id="penggunaan" className="text-[11pt] uppercase" value={data.penggunaan} onChange={(e) => setData('penggunaan', e.target.value)} required placeholder="CONTOH: GEDUNG SEKOLAH" />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-1.5">
+                                <InputLabel htmlFor="letak_alamat" value="LOKASI / ALAMAT LENGKAP" className="text-[9pt] font-semibold text-gray-500" />
+                                <textarea
+                                    id="letak_alamat"
+                                    className="w-full px-3 rounded-md border-gray-300 bg-white py-2 text-[9pt] focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all resize-none shadow-sm"
+                                    rows={3}
+                                    value={data.letak_alamat}
+                                    onChange={(e) => setData('letak_alamat', e.target.value)}
+                                    required
+                                    placeholder="MASUKKAN ALAMAT LOKASI TANAH SECARA LENGKAP..."
+                                />
+                            </div>
+                            <div className="space-y-5">
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="group/field relative">
-                                        <InputLabel htmlFor="luas" value="LUAS TANAH (M²)" className="mb-1.5 ml-1 text-[10px] font-black text-gray-400 tracking-widest" />
-                                        <TextInput id="luas" type="text" placeholder="0.00" className="w-full px-4 rounded-xl border-gray-100 bg-gray-50 py-2.5 font-black text-gray-800 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all text-sm tracking-widest" value={data.luas} onChange={(e) => setData('luas', e.target.value)} required />
-                                        <InputError message={errors.luas} className="mt-2 text-[10px] font-bold" />
+                                    <div className="space-y-1">
+                                        <InputLabel value="TGL SERTIFIKAT" className="text-[9pt] font-semibold text-gray-500" />
+                                        <ModernDatePicker value={data.tanggal_sertifikat} onChange={(date) => setData('tanggal_sertifikat', date)} />
                                     </div>
-                                    <div className="group/field relative">
-                                        <InputLabel htmlFor="hak_tanah" value="STATUS HAK" className="mb-1.5 ml-1 text-[10px] font-black text-gray-400 tracking-widest" />
-                                        <TextInput id="hak_tanah" className="w-full px-4 rounded-xl border-gray-100 bg-gray-50 py-2.5 font-black text-gray-800 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all text-sm uppercase" value={data.hak_tanah} onChange={(e) => setData('hak_tanah', e.target.value)} required placeholder="MISAL: HAK PAKAI" />
-                                        <InputError message={errors.hak_tanah} className="mt-2 text-[10px] font-bold" />
+                                    <div className="space-y-1">
+                                        <InputLabel value="NO. SERTIFIKAT" className="text-[9pt] font-semibold text-gray-500" />
+                                        <TextInput className="text-[9pt] uppercase" value={data.nomor_sertifikat} onChange={(e) => setData('nomor_sertifikat', e.target.value)} placeholder="NO..." />
                                     </div>
                                 </div>
-
-                                <div className="group/field relative">
-                                    <InputLabel htmlFor="letak_alamat" value="LOKASI / ALAMAT LENGKAP" className="mb-1.5 ml-1 text-[10px] font-black text-gray-400 tracking-widest" />
-                                    <textarea
-                                        id="letak_alamat"
-                                        className="w-full px-4 rounded-xl border-gray-100 bg-gray-50 py-2.5 font-black text-gray-800 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all text-sm outline-none resize-none"
-                                        rows={2}
-                                        value={data.letak_alamat}
-                                        onChange={(e) => setData('letak_alamat', e.target.value)}
-                                        required
-                                        placeholder="ALAMAT LENGKAP LOKASI TANAH..."
-                                    />
-                                    <InputError message={errors.letak_alamat} className="mt-2 text-[10px] font-bold" />
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="group/field relative">
-                                        <InputLabel htmlFor="tanggal_sertifikat" value="TGL SERTIFIKAT" className="mb-1.5 ml-1 text-[10px] font-black text-gray-400 tracking-widest" />
-                                        <ModernDatePicker
-                                            id="tanggal_sertifikat"
-                                            value={data.tanggal_sertifikat}
-                                            onChange={(date) => setData('tanggal_sertifikat', date)}
-                                        />
-                                        <InputError message={errors.tanggal_sertifikat} className="mt-2 text-[10px] font-bold" />
-                                    </div>
-                                    <div className="group/field relative">
-                                        <InputLabel htmlFor="nomor_sertifikat" value="NO. SERTIFIKAT" className="mb-1.5 ml-1 text-[10px] font-black text-gray-400 tracking-widest" />
-                                        <TextInput id="nomor_sertifikat" className="w-full px-4 rounded-xl border-gray-100 bg-gray-50 py-2.5 font-black text-gray-800 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all text-sm uppercase tracking-widest" value={data.nomor_sertifikat} onChange={(e) => setData('nomor_sertifikat', e.target.value)} required placeholder="NO..." />
-                                        <InputError message={errors.nomor_sertifikat} className="mt-2 text-[10px] font-bold" />
-                                    </div>
-                                </div>
-
-                                <div className="group/field relative">
-                                    <InputLabel htmlFor="penggunaan" value="TUJUAN PENGGUNAAN" className="mb-1.5 ml-1 text-[10px] font-black text-gray-400 tracking-widest" />
-                                    <TextInput id="penggunaan" className="w-full px-4 rounded-xl border-gray-100 bg-gray-50 py-2.5 font-black text-gray-800 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all text-sm uppercase" value={data.penggunaan} onChange={(e) => setData('penggunaan', e.target.value)} required placeholder="CONTOH: GEDUNG SEKOLAH" />
-                                    <InputError message={errors.penggunaan} className="mt-2 text-[10px] font-bold" />
-                                </div>
-
-                                <div className="group/field relative">
+                                <div className="space-y-1.5">
                                     <SearchableSelect
                                         label="KETERKAITAN DATA RUANG (OPTS)"
                                         isMulti={true}
                                         value={data.ruangan_id}
                                         onChange={(val) => setData('ruangan_id', val)}
                                         options={ruangans.map(r => ({ value: r.id, label: `${r.kode_ruangan} - ${r.nama_ruangan}` }))}
-                                        error={errors.ruangan_id || (Object.keys(errors).find(key => key.startsWith('ruangan_id.')) ? errors[Object.keys(errors).find(key => key.startsWith('ruangan_id.')) as keyof typeof errors] : undefined)}
-                                        placeholder="-- PILIH BEBERAPA RUANG --"
+                                        placeholder="-- PILIH RUANG JIKA ADA --"
                                     />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-4 mt-12">
-                            <SecondaryButton type="button" onClick={closeModal} className="flex-1 !rounded-[1.2rem] !py-3.5 justify-center !border-none !bg-gray-100 !text-gray-500 font-black uppercase tracking-widest text-[10px] hover:!bg-gray-200 transition-all">
-                                BATAL
-                            </SecondaryButton>
-                            <PrimaryButton
-                                className={`flex-[1.5] !rounded-[1.2rem] !py-3.5 shadow-xl border-none justify-center ${isEditing ? '!bg-gradient-to-r from-indigo-600 to-indigo-700 shadow-indigo-100' : '!bg-gradient-to-r from-blue-600 to-indigo-700 shadow-blue-100'} hover:-translate-y-1 active:translate-y-0 transition-all`}
-                                disabled={processing}
-                            >
-                                <span className="font-black text-white tracking-[0.2em] text-[10px] uppercase">
-                                    {processing ? 'PROSES...' : (isEditing ? 'SIMPAN PERUBAHAN' : 'TAMBAH DATA ASET')}
-                                </span>
-                            </PrimaryButton>
+                        <div className="pt-2">
+                             <SearchableSelect
+                                label="STATUS KOMPTABEL (KLASIFIKASI BMD)"
+                                value={data.kode_komptabel}
+                                onChange={(val) => setData('kode_komptabel', val as string)}
+                                options={[
+                                    { value: '01', label: '01 - INTRAKOMPTABEL (MODAL)' },
+                                    { value: '02', label: '02 - EKSTRAKOMPTABEL (NON-MODAL)' },
+                                ]}
+                            />
+                            <p className="text-[9pt] text-indigo-500 mt-2 font-semibold italic opacity-80">* Berpengaruh pada segmen ke-2 kode lokasi BMD sesuai Permendagri 108/2016.</p>
                         </div>
-                    </form>
-                </div>
-            </Modal>
 
-            {/* Premium Detail Modal */}
-            <Modal show={isDetailModalOpen} onClose={closeDetailModal} maxWidth="3xl">
-                <div className="bg-white/95 backdrop-blur-xl max-h-[90vh] overflow-y-auto custom-scrollbar rounded-[2.5rem]">
-                    {/* Header */}
-                    <div className="px-8 pt-10 pb-12 relative flex flex-col items-center text-center overflow-hidden bg-gradient-to-br from-indigo-700 via-blue-600 to-blue-700">
-                        <div className="absolute top-0 right-0 -mr-10 -mt-10 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
-                        <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center mb-4">
-                            <Icons.Eye className="w-7 h-7 text-white" />
-                        </div>
-                        <h3 className="text-xl font-black text-white tracking-tight uppercase">Detail Lengkap Aset</h3>
-                        <p className="text-white/60 text-[10px] font-bold uppercase tracking-[0.3em] mt-1">Status Verifikasi Kartu Inventaris</p>
+                    <div className="group/field">
+                        <InputLabel htmlFor="keterangan" value="CATATAN / KETERANGAN TAMBAHAN" className="mb-1 text-[9pt] font-semibold text-gray-500" />
+                        <textarea
+                            id="keterangan"
+                            className="w-full px-4 rounded-md border-gray-300 bg-white py-2 font-medium text-gray-600 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-[9pt] outline-none resize-none"
+                            rows={2}
+                            value={data.keterangan || ''}
+                            onChange={(e) => setData('keterangan', e.target.value)}
+                            placeholder="TAMBAHKAN INFO PENDUKUNG JIKA DIPERLUKAN..."
+                        />
                     </div>
+                </div>
+            </div>
+            </FormModal>
 
-                    <div className="p-8 -mt-6 bg-white rounded-t-[2.5rem] relative z-20">
-                        {selectedItemForDetail && (
-                            <div className="space-y-8">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                    {/* Data Identitas */}
-                                    <div className="space-y-4">
-                                        <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2">Identifikasi Aset</h4>
-                                        <div className="space-y-3">
-                                            {[
-                                                { label: 'Nama Barang', value: selectedItemForDetail.nama_barang, bold: true },
-                                                { label: 'Kode Barang', value: selectedItemForDetail.kode_barang },
-                                                { label: 'No. Register', value: selectedItemForDetail.nomor_register },
-                                                { label: 'Kategori', value: selectedItemForDetail.kategori?.nama_kategori },
-                                                { label: 'Ruangan', value: selectedItemForDetail.ruangans?.length ? selectedItemForDetail.ruangans.map(r => r.nama_ruangan).join(', ') : (selectedItemForDetail.ruangan?.nama_ruangan || '-') },
-                                            ].map((d, i) => (
-                                                <div key={i} className="flex flex-col">
-                                                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">{d.label}</span>
-                                                    <span className={`text-sm ${d.bold ? 'font-black text-gray-900' : 'font-bold text-gray-600'}`}>{d.value}</span>
-                                                </div>
-                                            ))}
+            {/* Detail Modal */}
+            <FormModal
+                show={isDetailModalOpen}
+                onClose={closeDetailModal}
+                title="Detail Informasi Aset"
+                subtitle="Kartu Inventaris Barang — KIB A Tanah"
+                icon={<Icons.Eye className="w-5 h-5" />}
+                accentColor="indigo"
+                headerVariant="gradient"
+                maxWidth="3xl"
+                bodyClassName="text-[9pt]"
+                footer={
+                    <div className="flex justify-end gap-3">
+                        <PrimaryButton onClick={() => {
+                            closeDetailModal();
+                            openModal(selectedItemForDetail!);
+                        }} className="!bg-indigo-600 hover:!bg-indigo-700">
+                            Edit Data
+                        </PrimaryButton>
+                        <SecondaryButton onClick={closeDetailModal}>Tutup</SecondaryButton>
+                    </div>
+                }
+            >
+                {selectedItemForDetail && (
+                    <div className="space-y-8 py-2">
+                        {/* Section 1: Identitas Produk */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                            <div className="space-y-6">
+                                <div>
+                                    <p className="text-[10pt] font-black text-indigo-400 uppercase tracking-[0.2em] mb-2 leading-none">Nama Barang</p>
+                                    <p className="text-[11pt] font-black text-gray-900 leading-tight border-l-4 border-indigo-500 pl-4">{selectedItemForDetail.nama_barang}</p>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-gray-50/80 p-3 rounded-2xl border border-gray-100/50">
+                                        <p className="text-[9pt] font-bold text-gray-400 uppercase tracking-widest mb-1">Status</p>
+                                        <div className="flex items-center gap-2">
+                                            <div className={`w-2 h-2 rounded-full ${selectedItemForDetail.kondisi === 'Baik' ? 'bg-emerald-500' : 'bg-rose-500'}`}></div>
+                                        <span className="text-[9pt] font-black text-gray-700 uppercase">{selectedItemForDetail.kondisi}</span>
                                         </div>
                                     </div>
-
-                                    {/* Data Fisik & Legalitas */}
-                                    <div className="space-y-4">
-                                        <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2">KIB A - Spesifikasi</h4>
-                                        <div className="space-y-3">
-                                            {[
-                                                { label: 'Luas Tanah', value: `${formatLuas(selectedItemForDetail.kib_a?.luas)} m²` },
-                                                { label: 'Status Hak', value: selectedItemForDetail.kib_a?.hak_tanah },
-                                                { label: 'Alamat', value: selectedItemForDetail.kib_a?.letak_alamat },
-                                                { label: 'No. Sertifikat', value: selectedItemForDetail.kib_a?.nomor_sertifikat },
-                                                { label: 'Penggunaan', value: selectedItemForDetail.kib_a?.penggunaan },
-                                            ].map((d, i) => (
-                                                <div key={i} className="flex flex-col">
-                                                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">{d.label}</span>
-                                                    <span className="text-sm font-bold text-gray-600">{d.value}</span>
-                                                </div>
-                                            ))}
-                                        </div>
+                                    <div className="bg-gray-50/80 p-3 rounded-2xl border border-gray-100/50">
+                                        <p className="text-[8pt] font-bold text-gray-400 uppercase tracking-widest mb-1">Perolehan</p>
+                                        <span className="text-[9pt] font-black text-gray-700">{selectedItemForDetail.tanggal_perolehan}</span>
                                     </div>
                                 </div>
+                            </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-gray-50">
-                                    {[
-                                        { label: 'Kondisi', value: selectedItemForDetail.kondisi, type: 'badge' },
-                                        { label: 'Tgl Perolehan', value: selectedItemForDetail.tanggal_perolehan },
-                                        { label: 'Nilai Harga', value: formatRupiah(selectedItemForDetail.harga), color: 'text-blue-600' },
-                                    ].map((d, i) => (
-                                        <div key={i} className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                                            <span className="text-[9px] font-black text-gray-400 uppercase block mb-1">{d.label}</span>
-                                            {d.type === 'badge' ? (
-                                                <span className={`inline-block px-3 py-1 rounded-lg text-[10px] font-black uppercase ${d.value === 'Baik' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
-                                                    {d.value}
-                                                </span>
-                                            ) : (
-                                                <span className={`text-sm font-black ${d.color || 'text-gray-800'}`}>{d.value}</span>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-
-                                {selectedItemForDetail.keterangan && (
-                                    <div className="bg-gray-50 p-6 rounded-[1.5rem] border border-gray-100">
-                                        <span className="text-[9px] font-black text-gray-400 uppercase block mb-2">Keterangan Tambahan</span>
-                                        <p className="text-xs font-medium text-gray-500 italic leading-relaxed">{selectedItemForDetail.keterangan}</p>
+                            <div className="space-y-4">
+                                <div className="p-4 bg-indigo-50/50 rounded-3xl border border-indigo-100/30 flex flex-col gap-3">
+                                    <div>
+                                        <p className="text-[9pt] font-black text-indigo-400 uppercase tracking-widest mb-1">Kode Lokasi BMD</p>
+                                        <code className="text-[10pt] font-black text-indigo-700 bg-indigo-100/50 px-3 py-1 rounded-lg block w-fit border border-indigo-200/50">{selectedItemForDetail.kode_lokasi_full}</code>
                                     </div>
-                                )}
+                                    <div>
+                                        <p className="text-[9pt] font-black text-indigo-400 uppercase tracking-widest mb-1">Kode Barang BMD</p>
+                                        <code className="text-[10pt] font-black text-indigo-700 bg-indigo-100/50 px-3 py-1 rounded-lg block w-fit border border-indigo-200/50">{selectedItemForDetail.kode_barang_full}</code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Section 2: Spesifikasi Tanah */}
+                        <div className="p-6 bg-gray-50/50 rounded-[2.5rem] border border-gray-100 grid grid-cols-2 md:grid-cols-4 gap-6 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-8 opacity-[0.03] rotate-12 pointer-events-none">
+                                <Icons.Map className="w-32 h-32" />
+                            </div>
+                            
+                            <div className="col-span-2">
+                                <p className="text-[9pt] font-black text-gray-400 uppercase tracking-widest mb-1">Lokasi / Alamat</p>
+                                <p className="text-[9pt] font-bold text-gray-700 leading-relaxed uppercase">{selectedItemForDetail.kib_a?.letak_alamat || '-'}</p>
+                            </div>
+                            <div>
+                                <p className="text-[8pt] font-black text-gray-400 uppercase tracking-widest mb-1">Luas</p>
+                                <p className="text-[11pt] font-black text-indigo-600">{formatLuas(selectedItemForDetail.kib_a?.luas)} m²</p>
+                            </div>
+                            <div>
+                                <p className="text-[8pt] font-black text-gray-400 uppercase tracking-widest mb-1">Hak Tanah</p>
+                                <p className="text-[9pt] font-black text-gray-700 uppercase">{selectedItemForDetail.kib_a?.hak_tanah || '-'}</p>
+                            </div>
+                        </div>
+
+                        {/* Section 3: Legalitas & Nilai */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="space-y-4">
+                                <h5 className="text-[10pt] font-black text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100 pb-2">Administrasi</h5>
+                                <div className="grid grid-cols-1 gap-4">
+                                    <div>
+                                        <p className="text-[8pt] text-gray-400 font-bold uppercase mb-0.5">Nomor Sertifikat</p>
+                                        <p className="text-[9pt] font-black text-gray-800 uppercase tracking-wider">{selectedItemForDetail.kib_a?.nomor_sertifikat || '-'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-[8pt] text-gray-400 font-bold uppercase mb-0.5">Tujuan Penggunaan</p>
+                                        <p className="text-[9pt] font-bold text-gray-800 uppercase">{selectedItemForDetail.kib_a?.penggunaan || '-'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="space-y-4">
+                                <h5 className="text-[10pt] font-black text-emerald-400 uppercase tracking-[0.2em] border-b border-emerald-50 pb-2">Nilai & Asal Usul</h5>
+                                <div className="bg-emerald-50/50 p-4 rounded-3xl border border-emerald-100 space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-[8pt] text-emerald-600 font-black uppercase">Harga Perolehan</p>
+                                        <p className="text-[12pt] font-black text-emerald-700 tracking-tight">{formatRupiah(selectedItemForDetail.harga)}</p>
+                                    </div>
+                                    <div className="pt-2 border-t border-emerald-100/50 flex items-center justify-between">
+                                        <p className="text-[8pt] text-emerald-600/70 font-bold uppercase tracking-wider">Asal Usul</p>
+                                        <p className="text-[9pt] font-black text-emerald-800 uppercase">{selectedItemForDetail.asal_usul || '-'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {selectedItemForDetail.keterangan && (
+                            <div className="pt-4 mt-4 border-t border-gray-100">
+                                <p className="text-[8pt] text-gray-400 font-black uppercase tracking-widest mb-2">Keterangan Tambahan</p>
+                                <p className="text-[9pt] text-gray-600 italic leading-relaxed">"{selectedItemForDetail.keterangan}"</p>
                             </div>
                         )}
-
-                        <div className="mt-10">
-                            <SecondaryButton onClick={closeDetailModal} className="w-full !py-4 justify-center !rounded-2xl !bg-gray-800 !text-white font-black text-[10px] tracking-[0.2em] shadow-xl shadow-gray-200">
-                                TUTUP JENDELA DETAIL
-                            </SecondaryButton>
-                        </div>
                     </div>
-                </div>
-            </Modal>
+                )}
+            </FormModal>
 
             <ConfirmationModal
                 show={isDeleteModalOpen}

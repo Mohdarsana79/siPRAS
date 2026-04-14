@@ -16,55 +16,125 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. User
+        // 1. User Admin
         $user = User::firstOrCreate(
             ['email' => 'admin@sipras.com'],
             [
-                'name' => 'Administrator',
+                'name'     => 'Administrator',
                 'password' => Hash::make('password'),
             ]
         );
 
-        // 2. Master Ruangan
-        $ruangans = [
-            ['kode_ruangan' => 'R001', 'nama_ruangan' => 'Ruang Kepala Sekolah', 'penanggung_jawab' => 'Bpk. Ahmad'],
-            ['kode_ruangan' => 'R002', 'nama_ruangan' => 'Laboratorium Komputer', 'penanggung_jawab' => 'Ibu Sita'],
-            ['kode_ruangan' => 'R003', 'nama_ruangan' => 'Perpustakaan', 'penanggung_jawab' => 'Bpk. Budi'],
-            ['kode_ruangan' => 'R004', 'nama_ruangan' => 'Ruang Guru', 'penanggung_jawab' => 'Ibu Ratna'],
-            ['kode_ruangan' => 'R005', 'nama_ruangan' => 'Kelas X MIPA 1', 'penanggung_jawab' => 'Bpk. Rizal'],
-        ];
-
-        foreach ($ruangans as $r) {
-            MasterRuangan::firstOrCreate(['kode_ruangan' => $r['kode_ruangan']], $r);
-        }
-
-        // 3. Master Sumber Dana
-        $sumberDanas = [
-            ['kode' => 'BKR', 'nama_sumber' => 'BOS Reguler'],
-            ['kode' => 'BKD', 'nama_sumber' => 'BOS Daerah'],
-            ['kode' => 'APBN', 'nama_sumber' => 'Bantuan Pemerintah Pusat'],
-            ['kode' => 'YYS', 'nama_sumber' => 'Yayasan'],
-            ['kode' => 'HBH', 'nama_sumber' => 'Hibah / Sumbangan'],
-        ];
-
-        foreach ($sumberDanas as $s) {
-            MasterSumberDana::firstOrCreate(['kode' => $s['kode']], $s);
-        }
-
-        // 4. Master Kategori
+        // 3. (Optional) Master Sumber Dana - Dikosongkan untuk input manual
+        // 4. Master Kategori (Permendagri No. 108 Tahun 2016)
+        // Format: Akun.Kelompok.Jenis.Objek.Rincian.Sub.SubSub
+        // Akun 1 = Aset
+        // Kelompok 3 = Aset Tetap
+        // Jenis: 1=Tanah, 2=Peralatan, 3=Gedung, 4=Jalan, 5=Aset Lainnya, 6=KDP
         $kategoris = [
-            ['kode_kategori' => 'K01', 'nama_kategori' => 'Tanah Bangunan Sekolah', 'tipe_kib' => 'A'],
-            ['kode_kategori' => 'K02', 'nama_kategori' => 'Komputer & Laptop', 'tipe_kib' => 'B'],
-            ['kode_kategori' => 'K03', 'nama_kategori' => 'Kendaraan Dinas', 'tipe_kib' => 'B'],
-            ['kode_kategori' => 'K04', 'nama_kategori' => 'Bangunan Ruang Kelas', 'tipe_kib' => 'C'],
-            ['kode_kategori' => 'K05', 'nama_kategori' => 'Jalan Setapak Sekolah', 'tipe_kib' => 'D'],
-            ['kode_kategori' => 'K06', 'nama_kategori' => 'Buku Referensi Pustaka', 'tipe_kib' => 'E'],
-            ['kode_kategori' => 'K07', 'nama_kategori' => 'Proyek Gedung Serbaguna', 'tipe_kib' => 'F'],
-            ['kode_kategori' => 'K08', 'nama_kategori' => 'Meja & Kursi Siswa', 'tipe_kib' => 'B'],
+
+            // ========== KIB A - TANAH (Jenis 1) ==========
+            [
+                'kode_akun' => '1', 'kode_kelompok' => '3', 'kode_jenis' => '1',
+                'kode_objek' => '01', 'kode_rincian_objek' => '01', 'kode_sub_rincian_objek' => '01', 'kode_sub_sub_rincian_objek' => '001',
+                'nama_kategori' => 'Tanah Bangunan Rumah Negara Gol. I',
+                'tipe_kib' => 'A',
+            ],
+            [
+                'kode_akun' => '1', 'kode_kelompok' => '3', 'kode_jenis' => '1',
+                'kode_objek' => '01', 'kode_rincian_objek' => '01', 'kode_sub_rincian_objek' => '01', 'kode_sub_sub_rincian_objek' => '005',
+                'nama_kategori' => 'Tanah Bangunan Gedung Sekolah',
+                'tipe_kib' => 'A',
+            ],
+
+            // ========== KIB B - PERALATAN DAN MESIN (Jenis 2) ==========
+            // Alat Kantor (2.05)
+            [
+                'kode_akun' => '1', 'kode_kelompok' => '3', 'kode_jenis' => '2',
+                'kode_objek' => '05', 'kode_rincian_objek' => '01', 'kode_sub_rincian_objek' => '01', 'kode_sub_sub_rincian_objek' => '002',
+                'nama_kategori' => 'Mesin Tik Manual Standard (11-13 inch)',
+                'tipe_kib' => 'B',
+            ],
+            [
+                'kode_akun' => '1', 'kode_kelompok' => '3', 'kode_jenis' => '2',
+                'kode_objek' => '05', 'kode_rincian_objek' => '01', 'kode_sub_rincian_objek' => '02', 'kode_sub_sub_rincian_objek' => '001',
+                'nama_kategori' => 'Meja Kerja Pejabat',
+                'tipe_kib' => 'B',
+            ],
+            [
+                'kode_akun' => '1', 'kode_kelompok' => '3', 'kode_jenis' => '2',
+                'kode_objek' => '05', 'kode_rincian_objek' => '01', 'kode_sub_rincian_objek' => '02', 'kode_sub_sub_rincian_objek' => '005',
+                'nama_kategori' => 'Lemari Besi/Warkat',
+                'tipe_kib' => 'B',
+            ],
+            // Komputer (2.10)
+            [
+                'kode_akun' => '1', 'kode_kelompok' => '3', 'kode_jenis' => '2',
+                'kode_objek' => '10', 'kode_rincian_objek' => '01', 'kode_sub_rincian_objek' => '01', 'kode_sub_sub_rincian_objek' => '002',
+                'nama_kategori' => 'PC Unit',
+                'tipe_kib' => 'B',
+            ],
+            [
+                'kode_akun' => '1', 'kode_kelompok' => '3', 'kode_jenis' => '2',
+                'kode_objek' => '10', 'kode_rincian_objek' => '01', 'kode_sub_rincian_objek' => '01', 'kode_sub_sub_rincian_objek' => '003',
+                'nama_kategori' => 'Laptop',
+                'tipe_kib' => 'B',
+            ],
+
+            // ========== KIB C - GEDUNG DAN BANGUNAN (Jenis 3) ==========
+            [
+                'kode_akun' => '1', 'kode_kelompok' => '3', 'kode_jenis' => '3',
+                'kode_objek' => '01', 'kode_rincian_objek' => '01', 'kode_sub_rincian_objek' => '01', 'kode_sub_sub_rincian_objek' => '001',
+                'nama_kategori' => 'Bangunan Gedung Kantor Permanen',
+                'tipe_kib' => 'C',
+            ],
+            [
+                'kode_akun' => '1', 'kode_kelompok' => '3', 'kode_jenis' => '3',
+                'kode_objek' => '01', 'kode_rincian_objek' => '01', 'kode_sub_rincian_objek' => '01', 'kode_sub_sub_rincian_objek' => '011',
+                'nama_kategori' => 'Bangunan Gedung Pendidikan Permanen',
+                'tipe_kib' => 'C',
+            ],
+
+            // ========== KIB D - JALAN, IRIGASI (Jenis 4) ==========
+            [
+                'kode_akun' => '1', 'kode_kelompok' => '3', 'kode_jenis' => '4',
+                'kode_objek' => '01', 'kode_rincian_objek' => '01', 'kode_sub_rincian_objek' => '01', 'kode_sub_sub_rincian_objek' => '001',
+                'nama_kategori' => 'Jalan Arteri Aspal',
+                'tipe_kib' => 'D',
+            ],
+
+            // ========== KIB E - ASET LAINNYA (Jenis 5) ==========
+            [
+                'kode_akun' => '1', 'kode_kelompok' => '3', 'kode_jenis' => '5',
+                'kode_objek' => '01', 'kode_rincian_objek' => '01', 'kode_sub_rincian_objek' => '01', 'kode_sub_sub_rincian_objek' => '001',
+                'nama_kategori' => 'Buku Ilmu Pengetahuan Umum',
+                'tipe_kib' => 'E',
+            ],
+
+            // ========== KIB F - KDP (Jenis 6) ==========
+            [
+                'kode_akun' => '1', 'kode_kelompok' => '3', 'kode_jenis' => '6',
+                'kode_objek' => '01', 'kode_rincian_objek' => '01', 'kode_sub_rincian_objek' => '01', 'kode_sub_sub_rincian_objek' => '001',
+                'nama_kategori' => 'KDP Bangunan Gedung Negara',
+                'tipe_kib' => 'F',
+            ],
         ];
 
         foreach ($kategoris as $k) {
-            MasterKategori::firstOrCreate(['kode_kategori' => $k['kode_kategori']], $k);
+            MasterKategori::firstOrCreate(
+                [
+                    'kode_akun'                  => $k['kode_akun'],
+                    'kode_kelompok'              => $k['kode_kelompok'],
+                    'kode_jenis'                 => $k['kode_jenis'],
+                    'kode_objek'                 => $k['kode_objek'],
+                    'kode_rincian_objek'         => $k['kode_rincian_objek'],
+                    'kode_sub_rincian_objek'     => $k['kode_sub_rincian_objek'],
+                    'kode_sub_sub_rincian_objek' => $k['kode_sub_sub_rincian_objek'],
+                ],
+                $k
+            );
         }
+
+        // 5. Jalankan Wilayah Seeder (Dihapus sesuai permintaan)
     }
 }

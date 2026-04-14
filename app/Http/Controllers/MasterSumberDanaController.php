@@ -28,6 +28,14 @@ class MasterSumberDanaController extends Controller
         ]);
     }
 
+    /**
+     * Defensive show route - redirects back to index.
+     */
+    public function show()
+    {
+        return redirect()->route('master-sumber-dana.index');
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -50,6 +58,11 @@ class MasterSumberDanaController extends Controller
 
     public function destroy(MasterSumberDana $master_sumber_dana)
     {
+        if ($master_sumber_dana->items()->exists()) {
+            $usedBy = $master_sumber_dana->items()->limit(3)->pluck('nama_barang')->join(', ');
+            return redirect()->back()->with('error', "used:{$usedBy}");
+        }
+
         $master_sumber_dana->delete();
         return redirect()->route('master-sumber-dana.index')->with('success', 'Sumber Dana berhasil dihapus.');
     }

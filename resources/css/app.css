@@ -1,9 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ============================================================
-   Inertia.js Progress Bar — Rainbow Gradient + Glow
+   Base Styles
+   ============================================================ */
+@layer base {
+    html {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+        @apply font-sans text-gray-800 bg-gray-50;
+    }
+
+    /* Consistent scroll style */
+    ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+        @apply bg-gray-200 rounded-full;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        @apply bg-gray-300;
+    }
+}
+
+/* ============================================================
+   Component Layer — Consistent Card, Badge, Form, Table
+   ============================================================ */
+@layer components {
+
+    /* Card */
+    .card {
+        @apply bg-white rounded-2xl border border-gray-100 shadow-card;
+    }
+
+    /* Section header inside a card */
+    .card-header {
+        @apply flex items-center justify-between px-5 py-4 border-b border-gray-100;
+    }
+
+    .card-title {
+        @apply text-sm font-semibold text-gray-800;
+    }
+
+    /* Badge variants */
+    .badge {
+        @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-xs font-medium;
+    }
+    .badge-green  { @apply bg-emerald-50 text-emerald-700; }
+    .badge-yellow { @apply bg-amber-50   text-amber-700;   }
+    .badge-red    { @apply bg-red-50     text-red-700;     }
+    .badge-blue   { @apply bg-blue-50    text-blue-700;    }
+    .badge-gray   { @apply bg-gray-100   text-gray-600;    }
+
+    /* Form label — consistent */
+    .form-label {
+        @apply block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide;
+    }
+
+    /* Table */
+    .data-table thead th {
+        @apply px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide bg-gray-50 border-b border-gray-100;
+    }
+    .data-table tbody tr {
+        @apply border-b border-gray-50 hover:bg-gray-50/60 transition-colors duration-150;
+    }
+    .data-table tbody td {
+        @apply px-4 py-3 text-sm text-gray-700;
+    }
+
+    /* Section title */
+    .section-title {
+        @apply text-base font-semibold text-gray-900;
+    }
+    .section-subtitle {
+        @apply text-sm text-gray-500 mt-0.5;
+    }
+
+    /* Modal container helper */
+    .modal-header {
+        @apply flex items-center gap-3 p-5 border-b border-gray-100;
+    }
+    .modal-body {
+        @apply p-5;
+    }
+    .modal-footer {
+        @apply flex items-center justify-end gap-3 p-5 border-t border-gray-100 bg-gray-50/50 rounded-b-2xl;
+    }
+
+    /* Icon accent box */
+    .icon-box {
+        @apply flex items-center justify-center w-10 h-10 rounded-xl flex-shrink-0;
+    }
+}
+
+/* ============================================================
+   Inertia.js Progress Bar — Colorful thin bar
    ============================================================ */
 @keyframes progress-rainbow {
     0%   { background-position: 0% 50%; }
@@ -11,39 +112,22 @@
     100% { background-position: 0% 50%; }
 }
 
-@keyframes progress-shimmer {
-    0%   { opacity: 0.75; }
-    50%  { opacity: 1; }
-    100% { opacity: 0.75; }
-}
-
 #nprogress .bar {
-    height: 4px !important;
+    height: 3px !important;
     background: linear-gradient(
         90deg,
-        #f43f5e,
-        #fb923c,
-        #facc15,
-        #4ade80,
-        #38bdf8,
-        #818cf8,
-        #e879f9,
-        #f43f5e
+        #6366f1,
+        #8b5cf6,
+        #ec4899,
+        #f97316,
+        #6366f1
     ) !important;
     background-size: 300% 300% !important;
-    animation:
-        progress-rainbow 2s linear infinite,
-        progress-shimmer 1.5s ease-in-out infinite !important;
-    box-shadow:
-        0 0 8px 2px rgba(244, 63, 94, 0.5),
-        0 0 16px 4px rgba(129, 140, 248, 0.4) !important;
-    border-radius: 0 4px 4px 0 !important;
+    animation: progress-rainbow 1.5s linear infinite !important;
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.5) !important;
 }
 
-#nprogress .peg {
-    display: none !important;
-}
-
+#nprogress .peg,
 #nprogress .spinner {
     display: none !important;
 }

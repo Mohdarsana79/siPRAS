@@ -90,6 +90,11 @@
                 <td style="border: none !important; padding: 1px 0; text-align: center;">:</td>
                 <td style="border: none !important; padding: 1px 0; text-align: left;">{{ $p_inst }}</td>
             </tr>
+            <tr>
+                <td style="border: none !important; padding: 1px 0; text-align: left;">KODE LOKASI</td>
+                <td style="border: none !important; padding: 1px 0; text-align: center;">:</td>
+                <td style="border: none !important; padding: 1px 0; text-align: left;">{{ str_replace('XX', '05', $profile->kode_lokasi_bmd) . '.' . date('Y') }}</td>
+            </tr>
         </table>
     </div>
 

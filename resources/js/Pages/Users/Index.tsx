@@ -2,6 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
 import React, { useState, useMemo } from 'react';
 import Modal from '@/Components/Modal';
+import FormModal from '@/Components/FormModal';
 import DangerButton from '@/Components/DangerButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
@@ -245,7 +246,7 @@ export default function UserIndex({ users }: Props) {
                                             {getRoleBadge(user.role)}
                                         </td>
                                         <td className="px-6 py-5 text-right">
-                                            <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-2 group-hover:translate-x-0 transition-transform">
+                                            <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-300">
                                                 <button
                                                     onClick={() => openEditModal(user)}
                                                     className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"
@@ -302,169 +303,142 @@ export default function UserIndex({ users }: Props) {
                 </div>
             </div>
 
-            {/* Premium Colorful Modal - Add / Edit */}
-            <Modal show={confirmingUserCreation} onClose={closeModal} maxWidth="2xl">
-                <div className="bg-white/95 backdrop-blur-xl max-h-[90vh] overflow-y-auto custom-scrollbar rounded-[2.5rem]">
-                    {/* Artistic Header */}
-                    <div className={`px-8 pt-10 pb-12 relative flex flex-col items-center text-center overflow-hidden ${editingUser ? 'bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-800' : 'bg-gradient-to-br from-indigo-500 via-violet-600 to-purple-700'}`}>
-                        {/* Decorative Background Circles */}
-                        <div className="absolute top-0 right-0 -mr-10 -mt-10 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
-                        <div className="absolute bottom-0 left-0 -ml-10 -mb-10 w-48 h-48 bg-black/10 rounded-full blur-3xl"></div>
+            {/* Modal Add / Edit User */}
+            <FormModal
+                show={confirmingUserCreation}
+                onClose={closeModal}
+                title={editingUser ? 'Update Personil' : 'Registrasi Personil'}
+                subtitle="Manajemen Hak Akses & Profil Pengguna"
+                maxWidth="2xl"
+                accentColor="indigo"
+                icon={editingUser ? <Icons.Edit className="w-6 h-6" /> : <Icons.UserPlus className="w-6 h-6" />}
+                processing={processing}
+                onSubmit={submit}
+                submitLabel={editingUser ? 'Simpan Perubahan' : 'Registrasi Sekarang'}
+            >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-6">
+                        <h4 className="flex items-center gap-2 text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">
+                            <div className="w-6 h-px bg-indigo-100"></div> Identitas Utama
+                        </h4>
                         
-                        <div className="w-20 h-20 rounded-[2rem] bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center mb-5 shadow-2xl relative z-10">
-                            {editingUser ? <Icons.Edit className="w-8 h-8 text-white" /> : <Icons.UserPlus className="w-8 h-8 text-white" />}
+                        <div className="space-y-1">
+                            <InputLabel htmlFor="name" value="Nama Lengkap" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1" />
+                            <TextInput
+                                id="name"
+                                value={data.name}
+                                onChange={(e) => setData('name', e.target.value)}
+                                className="w-full bg-gray-50/50 font-bold uppercase"
+                                required
+                                placeholder="NAMA PERSONIL..."
+                            />
+                            <InputError message={errors.name} />
                         </div>
-                        
-                        <h3 className="text-2xl font-black text-white tracking-tight relative z-10 uppercase">
-                            {editingUser ? 'UPDATE PERSONIL' : 'REGISTRASI PERSONIL'}
-                        </h3>
-                        <p className="text-white/80 text-[10px] font-bold uppercase tracking-[0.3em] mt-2 relative z-10">
-                            Manajemen Hak Akses & Profil Pengguna
-                        </p>
+
+                        <div className="space-y-1">
+                            <InputLabel htmlFor="username" value="Username" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1" />
+                            <TextInput
+                                id="username"
+                                value={data.username}
+                                onChange={(e) => setData('username', e.target.value)}
+                                className="w-full bg-gray-50/50 font-bold text-indigo-600"
+                                required
+                                placeholder="USER ID..."
+                            />
+                            <InputError message={errors.username} />
+                        </div>
+
+                        <div className="space-y-1">
+                            <InputLabel htmlFor="email" value="Alamat Email" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1" />
+                            <TextInput
+                                id="email"
+                                type="email"
+                                value={data.email}
+                                onChange={(e) => setData('email', e.target.value)}
+                                className="w-full bg-gray-50/50 font-bold"
+                                required
+                                placeholder="EMAIL@INSTANSI.COM..."
+                            />
+                            <InputError message={errors.email} />
+                        </div>
                     </div>
 
-                    <form onSubmit={submit} className="px-8 pb-8 -mt-6 bg-white rounded-t-[2.5rem] relative z-20 pt-8 space-y-8">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className="space-y-6">
-                                <h4 className="flex items-center gap-2 text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">
-                                    <div className="w-6 h-px bg-indigo-100"></div> Identitas Utama
-                                </h4>
-                                
-                                <div className="group/field">
-                                    <InputLabel htmlFor="name" value="NAMA LENGKAP" className="mb-2 ml-1 text-[10px] font-black text-gray-400 tracking-widest" />
-                                    <TextInput
-                                        id="name"
-                                        value={data.name}
-                                        onChange={(e) => setData('name', e.target.value)}
-                                        className="w-full px-5 rounded-2xl border-gray-100 bg-gray-50 py-4 font-bold text-gray-800 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all text-sm uppercase placeholder:text-gray-300"
-                                        required
-                                        placeholder="NAMA PERSONIL..."
-                                    />
-                                    <InputError message={errors.name} className="mt-2 text-[10px] font-bold" />
-                                </div>
+                    <div className="space-y-6">
+                        <h4 className="flex items-center gap-2 text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">
+                            <div className="w-6 h-px bg-indigo-100"></div> Keamanan & Akses
+                        </h4>
 
-                                <div className="group/field">
-                                    <InputLabel htmlFor="username" value="USERNAME" className="mb-2 ml-1 text-[10px] font-black text-gray-400 tracking-widest" />
-                                    <TextInput
-                                        id="username"
-                                        value={data.username}
-                                        onChange={(e) => setData('username', e.target.value)}
-                                        className="w-full px-5 rounded-2xl border-gray-100 bg-gray-50 py-4 font-bold text-indigo-600 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all text-sm placeholder:text-gray-300"
-                                        required
-                                        placeholder="USER ID..."
-                                    />
-                                    <InputError message={errors.username} className="mt-2 text-[10px] font-bold" />
-                                </div>
-
-                                <div className="group/field">
-                                    <InputLabel htmlFor="email" value="ALAMAT EMAIL" className="mb-2 ml-1 text-[10px] font-black text-gray-400 tracking-widest" />
-                                    <TextInput
-                                        id="email"
-                                        type="email"
-                                        value={data.email}
-                                        onChange={(e) => setData('email', e.target.value)}
-                                        className="w-full px-5 rounded-2xl border-gray-100 bg-gray-50 py-4 font-bold text-gray-800 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all text-sm placeholder:text-gray-300"
-                                        required
-                                        placeholder="EMAIL@INSTANSI.COM..."
-                                    />
-                                    <InputError message={errors.email} className="mt-2 text-[10px] font-bold" />
-                                </div>
-                            </div>
-
-                            <div className="space-y-6">
-                                <h4 className="flex items-center gap-2 text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">
-                                    <div className="w-6 h-px bg-indigo-100"></div> Keamanan & Akses
-                                </h4>
-
-                                <div className="group/field">
-                                    <SearchableSelect
-                                        label="HAK AKSES / ROLE"
-                                        value={data.role}
-                                        onChange={(val) => setData('role', val as string)}
-                                        options={[
-                                            { value: 'administrator', label: 'ADMINISTRATOR' },
-                                            { value: 'kepala sekolah', label: 'KEPALA SEKOLAH' },
-                                            { value: 'guru / Staf', label: 'GURU / STAF' },
-                                            { value: 'siswa', label: 'SISWA' },
-                                            { value: 'user', label: 'USER UMUM' },
-                                        ]}
-                                        error={errors.role}
-                                        required
-                                    />
-                                </div>
-
-                                <div className="group/field">
-                                    <InputLabel htmlFor="password" value={editingUser ? "GANTI PASSWORD (OPSIONAL)" : "PASSWORD"} className="mb-2 ml-1 text-[10px] font-black text-gray-400 tracking-widest" />
-                                    <TextInput
-                                        id="password"
-                                        type="password"
-                                        value={data.password}
-                                        onChange={(e) => setData('password', e.target.value)}
-                                        className="w-full px-5 rounded-2xl border-gray-100 bg-gray-50 py-4 font-bold text-gray-800 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all text-sm placeholder:text-gray-400"
-                                        required={!editingUser}
-                                        placeholder="********"
-                                    />
-                                    <InputError message={errors.password} className="mt-2 text-[10px] font-bold" />
-                                </div>
-
-                                <div className="group/field">
-                                    <InputLabel htmlFor="password_confirmation" value="KONFIRMASI PASSWORD" className="mb-2 ml-1 text-[10px] font-black text-gray-400 tracking-widest" />
-                                    <TextInput
-                                        id="password_confirmation"
-                                        type="password"
-                                        value={data.password_confirmation}
-                                        onChange={(e) => setData('password_confirmation', e.target.value)}
-                                        className="w-full px-5 rounded-2xl border-gray-100 bg-gray-50 py-4 font-bold text-gray-800 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all text-sm placeholder:text-gray-400"
-                                        required={!editingUser}
-                                        placeholder="********"
-                                    />
-                                </div>
-                            </div>
+                        <div className="space-y-1">
+                            <SearchableSelect
+                                label="Hak Akses / Role"
+                                value={data.role}
+                                onChange={(val) => setData('role', val as string)}
+                                options={[
+                                    { value: 'administrator', label: 'ADMINISTRATOR' },
+                                    { value: 'kepala sekolah', label: 'KEPALA SEKOLAH' },
+                                    { value: 'guru / Staf', label: 'GURU / STAF' },
+                                    { value: 'siswa', label: 'SISWA' },
+                                    { value: 'user', label: 'USER UMUM' },
+                                ]}
+                                error={errors.role}
+                                required
+                            />
                         </div>
 
-                        <div className="flex items-center gap-4 mt-8">
-                            <SecondaryButton onClick={closeModal} className="flex-1 !rounded-2xl !py-4 justify-center !border-none !bg-gray-100 !text-gray-500 font-black uppercase tracking-widest text-[10px] hover:!bg-gray-200 transition-all">
-                                BATAL
-                            </SecondaryButton>
-                            <button
-                                type="submit"
-                                disabled={processing}
-                                className="flex-[1.5] py-4 bg-gradient-to-r from-indigo-600 to-indigo-800 text-white font-black text-[10px] uppercase tracking-[0.2em] rounded-2xl hover:-translate-y-1 active:translate-y-0 transition-all shadow-xl shadow-indigo-100 disabled:opacity-50"
-                            >
-                                {processing ? 'MEMPROSES...' : (editingUser ? 'SIMPAN PERUBAHAN' : 'REGISTRASI SEKARANG')}
-                            </button>
+                        <div className="space-y-1">
+                            <InputLabel htmlFor="password" value={editingUser ? "Ganti Password (Opsional)" : "Password"} className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1" />
+                            <TextInput
+                                id="password"
+                                type="password"
+                                value={data.password}
+                                onChange={(e) => setData('password', e.target.value)}
+                                className="w-full bg-gray-50/50"
+                                required={!editingUser}
+                                placeholder="********"
+                            />
+                            <InputError message={errors.password} />
                         </div>
-                    </form>
+
+                        <div className="space-y-1">
+                            <InputLabel htmlFor="password_confirmation" value="Konfirmasi Password" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1" />
+                            <TextInput
+                                id="password_confirmation"
+                                type="password"
+                                value={data.password_confirmation}
+                                onChange={(e) => setData('password_confirmation', e.target.value)}
+                                className="w-full bg-gray-50/50"
+                                required={!editingUser}
+                                placeholder="********"
+                            />
+                        </div>
+                    </div>
                 </div>
-            </Modal>
+            </FormModal>
 
             {/* Deletion Confirmation Modal */}
-            <Modal show={confirmingUserDeletion} onClose={() => setConfirmingUserDeletion(false)} maxWidth="md">
-                <div className="p-8 text-center">
-                    <div className="w-20 h-20 bg-rose-50 text-rose-600 rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-lg shadow-rose-100/50">
-                        <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                    </div>
-                    <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight">Hapus Pengguna?</h3>
-                    <p className="text-sm text-gray-400 mt-4 leading-relaxed font-medium">
-                        Anda akan menghapus akun <span className="font-black text-gray-900">{userToDelete?.name}</span> secara permanen. Tindakan ini <span className="text-rose-600 font-bold">tidak dapat dibatalkan</span>.
+            <FormModal
+                show={confirmingUserDeletion}
+                onClose={() => setConfirmingUserDeletion(false)}
+                title="Hapus Pengguna"
+                subtitle="Tindakan ini tidak dapat dibatalkan"
+                maxWidth="md"
+                accentColor="rose"
+                icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m4-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>}
+                onSubmit={(e: React.FormEvent) => { e.preventDefault(); deleteUser(); }}
+                submitLabel="Ya, Hapus Permanen"
+                processing={processing}
+            >
+                <div className="space-y-4">
+                    <p className="text-sm text-gray-500 leading-relaxed font-medium">
+                        Anda akan menghapus akun <span className="font-black text-gray-900">{userToDelete?.name}</span> secara permanen. Seluruh hak akses pengguna ini akan dicabut secara instan.
                     </p>
-                    <div className="mt-10 flex flex-col gap-3">
-                        <button
-                            onClick={deleteUser}
-                            disabled={processing}
-                            className="w-full py-4 bg-rose-600 text-white font-black text-[10px] uppercase tracking-[0.2em] rounded-2xl hover:bg-rose-700 transition-all shadow-xl shadow-rose-100"
-                        >
-                            {processing ? 'MENGHAPUS...' : 'YA, HAPUS PERMANEN'}
-                        </button>
-                        <SecondaryButton 
-                            onClick={() => setConfirmingUserDeletion(false)} 
-                            className="w-full !justify-center !rounded-2xl !py-4 !border-none !text-gray-400 font-black uppercase text-[10px] tracking-widest hover:!bg-gray-50"
-                        >
-                            BATALKAN
-                        </SecondaryButton>
+                    <div className="p-4 bg-rose-50 rounded-2xl border border-rose-100">
+                        <p className="text-xs text-rose-700 font-bold italic">
+                            * Tindakan ini tidak dapat dibatalkan.
+                        </p>
                     </div>
                 </div>
-            </Modal>
+            </FormModal>
         </AuthenticatedLayout>
     );
 }

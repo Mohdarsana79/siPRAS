@@ -13,34 +13,30 @@ export default function Pagination({ links }: Props) {
     if (links.length <= 3) return null;
 
     return (
-        <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
+        <div className="flex flex-wrap items-center justify-center gap-1">
             {links.map((link, key) => {
+                let label = link.label;
+                if (label.includes('Previous')) label = '←';
+                else if (label.includes('Next')) label = '→';
+
                 if (link.url === null) {
                     return (
-                        <div
+                        <span
                             key={key}
-                            className="px-4 py-2 text-sm text-gray-400 bg-white border border-gray-100 rounded-xl cursor-not-allowed font-bold"
-                            dangerouslySetInnerHTML={{ __html: link.label }}
+                            className="inline-flex items-center justify-center w-8 h-8 text-sm text-gray-300 rounded-lg cursor-not-allowed"
+                            dangerouslySetInnerHTML={{ __html: label }}
                         />
                     );
-                }
-
-                // Custom label handling for the requested style
-                let label = link.label;
-                if (label.includes('Previous')) {
-                    label = '&laquo;';
-                } else if (label.includes('Next')) {
-                    label = '&raquo;';
                 }
 
                 return (
                     <Link
                         key={key}
                         href={link.url}
-                        className={`px-4 py-2 text-sm font-black rounded-xl border transition-all duration-200 ${
+                        className={`inline-flex items-center justify-center w-8 h-8 text-sm font-medium rounded-lg transition-all duration-150 ${
                             link.active
-                                ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-100'
-                                : 'bg-white border-gray-100 text-gray-500 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50/50'
+                                ? 'bg-indigo-600 text-white shadow-sm'
+                                : 'text-gray-600 hover:bg-gray-100'
                         }`}
                         dangerouslySetInnerHTML={{ __html: label }}
                     />

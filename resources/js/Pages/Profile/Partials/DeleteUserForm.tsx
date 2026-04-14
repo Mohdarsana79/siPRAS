@@ -1,7 +1,7 @@
+import FormModal from '@/Components/FormModal';
 import DangerButton from '@/Components/DangerButton';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
-import Modal from '@/Components/Modal';
 import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
 import { useForm } from '@inertiajs/react';
@@ -52,73 +52,54 @@ export default function DeleteUserForm({
     return (
         <section className={`space-y-6 ${className}`}>
             <header>
-                <h2 className="text-lg font-medium text-gray-900">
-                    Delete Account
+                <h2 className="text-xl font-black text-gray-900 tracking-tight flex items-center gap-3 italic">
+                    <span className="w-1.5 h-6 bg-rose-500 rounded-full"></span>
+                    HAPUS AKUN
                 </h2>
 
-                <p className="mt-1 text-sm text-gray-600">
-                    Once your account is deleted, all of its resources and data
-                    will be permanently deleted. Before deleting your account,
-                    please download any data or information that you wish to
-                    retain.
+                <p className="mt-2 text-sm text-gray-400 font-medium leading-relaxed max-w-2xl">
+                    Setelah akun Anda dihapus, semua sumber daya dan datanya akan dihapus secara permanen. Sebelum menghapus akun, harap unduh data atau informasi apa pun yang ingin Anda pertahankan.
                 </p>
             </header>
 
-            <DangerButton onClick={confirmUserDeletion}>
-                Delete Account
+            <DangerButton onClick={confirmUserDeletion} className="!rounded-xl !px-6 !py-3 !font-black !text-[10px] !tracking-widest shadow-xl shadow-rose-100">
+                HAPUS AKUN SAYA
             </DangerButton>
 
-            <Modal show={confirmingUserDeletion} onClose={closeModal}>
-                <form onSubmit={deleteUser} className="p-6">
-                    <h2 className="text-lg font-medium text-gray-900">
-                        Are you sure you want to delete your account?
-                    </h2>
-
-                    <p className="mt-1 text-sm text-gray-600">
-                        Once your account is deleted, all of its resources and
-                        data will be permanently deleted. Please enter your
-                        password to confirm you would like to permanently delete
-                        your account.
+            <FormModal
+                show={confirmingUserDeletion}
+                onClose={closeModal}
+                title="Konfirmasi Hapus Akun"
+                subtitle="Tindakan ini permanen dan tidak dapat dibatalkan"
+                maxWidth="md"
+                accentColor="rose"
+                icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m4-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>}
+                onSubmit={deleteUser}
+                submitLabel="Ya, Hapus Akun Saya"
+                processing={processing}
+            >
+                <div className="space-y-6">
+                    <p className="text-sm text-gray-500 leading-relaxed font-medium">
+                        Apakah Anda yakin ingin menghapus akun Anda? Masukkan kata sandi Anda untuk mengonfirmasi bahwa Anda ingin menghapus akun secara permanen.
                     </p>
 
-                    <div className="mt-6">
-                        <InputLabel
-                            htmlFor="password"
-                            value="Password"
-                            className="sr-only"
-                        />
-
+                    <div className="space-y-2">
+                        <InputLabel htmlFor="password" value="Kata Sandi Konfirmasi" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1" />
                         <TextInput
                             id="password"
                             type="password"
                             name="password"
                             ref={passwordInput}
                             value={data.password}
-                            onChange={(e) =>
-                                setData('password', e.target.value)
-                            }
-                            className="mt-1 block w-3/4"
+                            onChange={(e) => setData('password', e.target.value)}
+                            className="w-full bg-gray-50/50 font-bold"
+                            placeholder="Masukkan kata sandi untuk menghapus"
                             isFocused
-                            placeholder="Password"
                         />
-
-                        <InputError
-                            message={errors.password}
-                            className="mt-2"
-                        />
+                        <InputError message={errors.password} />
                     </div>
-
-                    <div className="mt-6 flex justify-end">
-                        <SecondaryButton onClick={closeModal}>
-                            Cancel
-                        </SecondaryButton>
-
-                        <DangerButton className="ms-3" disabled={processing}>
-                            Delete Account
-                        </DangerButton>
-                    </div>
-                </form>
-            </Modal>
+                </div>
+            </FormModal>
         </section>
     );
 }

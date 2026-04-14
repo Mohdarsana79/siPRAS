@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MasterWilayah;
 use App\Models\SchoolProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -11,9 +12,11 @@ class SchoolProfileController extends Controller
 {
     public function index()
     {
-        $profile = SchoolProfile::first();
+        $profile = SchoolProfile::with(['provinsiWilayah', 'kabKotaWilayah'])->first();
+        $provinsis = MasterWilayah::where('tipe', 'provinsi')->orderBy('nama_wilayah')->get(['id', 'kode_bps', 'nama_wilayah']);
         return Inertia::render('SchoolProfile/Index', [
-            'profile' => $profile
+            'profile'   => $profile,
+            'provinsis' => $provinsis,
         ]);
     }
 
@@ -34,7 +37,13 @@ class SchoolProfileController extends Controller
             'nip_pengelola_aset' => 'nullable|string|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'logo_daerah' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'tipe_wilayah' => 'required|in:kabupaten,kota',
+            'tipe_wilayah'         => 'required|in:kabupaten,kota',
+            'kode_entitas'         => 'nullable|string|max:2',
+            'provinsi_wilayah_id'  => 'nullable|exists:master_wilayahs,id',
+            'kab_kota_wilayah_id'  => 'nullable|exists:master_wilayahs,id',
+            'kode_provinsi'        => 'nullable|string|max:2',
+            'kode_kab_kota'        => 'nullable|string|max:2',
+            'kode_skpd'            => 'nullable|string|max:6',
         ]);
 
         $profile = SchoolProfile::first();
@@ -64,5 +73,24 @@ class SchoolProfileController extends Controller
         $profile->save();
 
         return \redirect()->back()->with('success', 'Profil sekolah berhasil diperbarui.');
+    }
+
+    /**
+     * API endpoint: ambil daftar kab/kota berdasarkan provinsi (untuk select dinamis pada UI)
+     */
+    public function getKabKota(Request $request)
+    {
+        $provinsiId = $request->query('provinsi_id');
+        if (!$provinsiId) {
+            return response()->json([]);
+        }
+
+        $kabKotas = MasterWilayah::whereIn('tipe', ['kabupaten', 'kota'])
+            ->where('parent_id', $provinsiId)
+            ->orderByRaw("CASE tipe WHEN 'kota' THEN 0 ELSE 1 END")
+            ->orderBy('nama_wilayah')
+            ->get(['id', 'kode_bps', 'nama_wilayah', 'tipe']);
+
+        return response()->json($kabKotas);
     }
 }

@@ -2,6 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
 import React, { useState } from 'react';
 import Modal from '@/Components/Modal';
+import FormModal from '@/Components/FormModal';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -9,6 +10,11 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
 import ConfirmationModal from '@/Components/ConfirmationModal';
 import ModernDatePicker from '@/Components/ModernDatePicker';
+
+const Icons = {
+    Plus: (props: any) => <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>,
+    Edit: (props: any) => <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>,
+};
 import SearchableSelect from '@/Components/SearchableSelect';
 
 interface Item { id: string; nama_barang: string; kode_barang: string; }
@@ -80,7 +86,7 @@ export default function Index({ pemeliharaans, items }: { pemeliharaans: Pemelih
         >
             <Head title="Pemeliharaan Aset" />
 
-            <div className="py-8 animate-fade-in-up">
+            <div className="py-8 animate-fade-in-up text-[9pt]">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
                         <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
@@ -92,13 +98,13 @@ export default function Index({ pemeliharaans, items }: { pemeliharaans: Pemelih
                             <table className="w-full whitespace-nowrap text-sm text-left text-gray-600">
                                 <thead className="bg-gradient-to-r from-indigo-600 to-violet-600">
                                     <tr>
-                                        <th className="px-4 py-3 text-white/90">No</th>
-                                        <th className="px-4 py-3 text-white/90">Tanggal</th>
-                                        <th className="px-4 py-3 text-white/90">Barang</th>
-                                        <th className="px-4 py-3 text-white/90">Jenis Pemeliharaan</th>
-                                        <th className="px-4 py-3 text-white/90">Biaya</th>
-                                        <th className="px-4 py-3 text-white/90">Penyedia Jasa & Ket.</th>
-                                        <th className="px-4 py-3 text-center text-white/90">Aksi</th>
+                                        <th className="px-4 py-3 text-white/90 text-[9pt]">No</th>
+                                        <th className="px-4 py-3 text-white/90 text-[9pt]">Tanggal</th>
+                                        <th className="px-4 py-3 text-white/90 text-[9pt]">Barang</th>
+                                        <th className="px-4 py-3 text-white/90 text-[9pt]">Jenis Pemeliharaan</th>
+                                        <th className="px-4 py-3 text-white/90 text-[9pt]">Biaya</th>
+                                        <th className="px-4 py-3 text-white/90 text-[9pt]">Penyedia Jasa & Ket.</th>
+                                        <th className="px-4 py-3 text-center text-white/90 text-[9pt]">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -133,122 +139,94 @@ export default function Index({ pemeliharaans, items }: { pemeliharaans: Pemelih
                 </div>
             </div>
 
-            <Modal show={isModalOpen} onClose={closeModal} maxWidth="2xl">
-                <div className="flex flex-col max-h-[90vh]">
-                    {/* Modal Header */}
-                    <div className="flex-shrink-0 relative px-8 py-10 overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700">
-                        <div className="relative z-10 flex items-center gap-4 text-white">
-                            <div className="p-3 bg-white/20 backdrop-blur-md rounded-2xl shadow-xl border border-white/30">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h2 className="text-2xl font-black tracking-tight">Catat Pemeliharaan Aset</h2>
-                                <p className="text-sm font-medium text-white/80 mt-1">Rekam riwayat perbaikan dan perawatan berkala barang inventaris.</p>
-                            </div>
-                        </div>
+            <FormModal
+                show={isModalOpen}
+                onClose={closeModal}
+                title="Catat Pemeliharaan Aset"
+                subtitle="Rekam riwayat perbaikan dan perawatan berkala barang inventaris."
+                maxWidth="2xl"
+                accentColor="emerald"
+                icon={<Icons.Plus className="w-6 h-6" />}
+                processing={processing}
+                onSubmit={submit}
+                submitLabel="Simpan Perawatan"
+                submitDisabled={!data.item_id}
+                bodyClassName="text-[9pt]"
+            >
+                <div className="space-y-6">
+                    {/* Pemilihan Barang */}
+                    <SearchableSelect
+                        label="Pilih Aset yang Diperbaiki"
+                        value={data.item_id}
+                        onChange={(val) => setData('item_id', val as string)}
+                        options={items.map(item => ({
+                            value: item.id,
+                            label: `${item.kode_barang} - ${item.nama_barang}`
+                        }))}
+                        error={errors.item_id}
+                        required
+                        placeholder="-- Cari Barang --"
+                    />
 
-                        <div className="absolute top-0 right-0 -mr-10 -mt-10 w-48 h-48 bg-white/10 rounded-full blur-3xl animate-pulse" />
-                        <div className="absolute bottom-0 left-0 -ml-10 -mb-10 w-32 h-32 bg-emerald-400/20 rounded-full blur-2xl" />
+                    {/* Waktu & Jenis */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-1">
+                            <InputLabel htmlFor="tanggal_pemeliharaan" value="Tanggal Perbaikan" className="text-[9pt] font-bold text-gray-400 uppercase tracking-widest ml-1" />
+                            <ModernDatePicker
+                                id="tanggal_pemeliharaan"
+                                value={data.tanggal_pemeliharaan}
+                                onChange={(date) => setData('tanggal_pemeliharaan', date)}
+                            />
+                            <InputError message={errors.tanggal_pemeliharaan} />
+                        </div>
+                        <div className="space-y-1">
+                            <InputLabel htmlFor="jenis_pemeliharaan" value="Jenis Perbaikan" className="text-[9pt] font-bold text-gray-400 uppercase tracking-widest ml-1" />
+                            <TextInput id="jenis_pemeliharaan" placeholder="Misal: Ganti Oli, Servis AC" className="w-full bg-gray-50/50 font-bold" value={data.jenis_pemeliharaan} onChange={(e) => setData('jenis_pemeliharaan', e.target.value)} required />
+                            <InputError message={errors.jenis_pemeliharaan} />
+                        </div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto custom-scrollbar">
-                        <form onSubmit={submit} className="p-8 bg-white">
-                            <div className="space-y-6">
-                                {/* Pemilihan Barang */}
-                                <SearchableSelect
-                                    label="Pilih Aset yang Diperbaiki"
-                                    value={data.item_id}
-                                    onChange={(val) => setData('item_id', val as string)}
-                                    options={items.map(item => ({
-                                        value: item.id,
-                                        label: `${item.kode_barang} - ${item.nama_barang}`
-                                    }))}
-                                    error={errors.item_id}
+                    {/* Biaya & Penyedia */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-1">
+                            <InputLabel htmlFor="biaya" value="Estimasi Biaya (Rp)" className="text-[9pt] font-bold text-gray-400 uppercase tracking-widest ml-1" />
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <span className="text-gray-400 font-bold text-sm">Rp</span>
+                                </div>
+                                <TextInput
+                                    id="biaya"
+                                    type="text"
+                                    className="w-full pl-10 bg-gray-50/50 font-bold"
+                                    value={data.biaya ? new Intl.NumberFormat('id-ID').format(Number(data.biaya)) : ''}
+                                    onChange={(e) => setData('biaya', e.target.value.replace(/\D/g, ''))}
                                     required
-                                    placeholder="-- Cari Barang --"
                                 />
-
-                                {/* Waktu & Jenis */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <InputLabel htmlFor="tanggal_pemeliharaan" value="Tanggal Perbaikan" className="mb-2 font-bold text-gray-700 px-1" />
-                                        <ModernDatePicker
-                                            id="tanggal_pemeliharaan"
-                                            value={data.tanggal_pemeliharaan}
-                                            onChange={(date) => setData('tanggal_pemeliharaan', date)}
-                                        />
-                                        <InputError message={errors.tanggal_pemeliharaan} className="mt-2" />
-                                    </div>
-                                    <div>
-                                        <InputLabel htmlFor="jenis_pemeliharaan" value="Jenis Perbaikan" className="mb-2 font-bold text-gray-700 px-1" />
-                                        <TextInput id="jenis_pemeliharaan" placeholder="Misal: Ganti Oli, Servis AC" className="w-full border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-2xl py-3.5 transition-all shadow-sm" value={data.jenis_pemeliharaan} onChange={(e) => setData('jenis_pemeliharaan', e.target.value)} required />
-                                        <InputError message={errors.jenis_pemeliharaan} className="mt-2" />
-                                    </div>
-                                </div>
-
-                                {/* Biaya & Penyedia */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <InputLabel htmlFor="biaya" value="Estimasi Biaya (Rp)" className="mb-2 font-bold text-gray-700 px-1" />
-                                        <div className="relative">
-                                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                                <span className="text-gray-400 font-bold text-sm">Rp</span>
-                                            </div>
-                                            <TextInput
-                                                id="biaya"
-                                                type="text"
-                                                className="w-full pl-10 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-2xl py-3.5 transition-all shadow-sm"
-                                                value={data.biaya ? new Intl.NumberFormat('id-ID').format(Number(data.biaya)) : ''}
-                                                onChange={(e) => setData('biaya', e.target.value.replace(/\D/g, ''))}
-                                                required
-                                            />
-                                        </div>
-                                        <InputError message={errors.biaya} className="mt-2" />
-                                    </div>
-                                    <div>
-                                        <InputLabel htmlFor="penyedia_jasa" value="Penyedia Jasa / Bengkel" className="mb-2 font-bold text-gray-700 px-1" />
-                                        <TextInput id="penyedia_jasa" placeholder="Nama Toko atau Teknisi" className="w-full border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-2xl py-3.5 transition-all shadow-sm" value={data.penyedia_jasa} onChange={(e) => setData('penyedia_jasa', e.target.value)} />
-                                        <InputError message={errors.penyedia_jasa} className="mt-2" />
-                                    </div>
-                                </div>
-
-                                {/* Keterangan */}
-                                <div>
-                                    <InputLabel htmlFor="keterangan" value="Rincian Kerusakan / Tindakan" className="mb-2 font-bold text-gray-700 px-1" />
-                                    <textarea
-                                        id="keterangan"
-                                        className="w-full border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-3xl py-3.5 transition-all text-sm font-medium shadow-sm"
-                                        rows={3}
-                                        value={data.keterangan}
-                                        onChange={(e) => setData('keterangan', e.target.value)}
-                                        placeholder="Tuliskan detail part yang diganti atau kendala aset..."
-                                    ></textarea>
-                                    <InputError message={errors.keterangan} className="mt-2" />
-                                </div>
                             </div>
+                            <InputError message={errors.biaya} />
+                        </div>
+                        <div className="space-y-1">
+                            <InputLabel htmlFor="penyedia_jasa" value="Penyedia Jasa / Bengkel" className="text-[9pt] font-bold text-gray-400 uppercase tracking-widest ml-1" />
+                            <TextInput id="penyedia_jasa" placeholder="Nama Toko atau Teknisi" className="w-full bg-gray-50/50 font-bold" value={data.penyedia_jasa} onChange={(e) => setData('penyedia_jasa', e.target.value)} />
+                            <InputError message={errors.penyedia_jasa} />
+                        </div>
+                    </div>
 
-                            <div className="flex items-center justify-end gap-3 mt-10 pt-8 border-t border-gray-100">
-                                <SecondaryButton
-                                    type="button"
-                                    onClick={closeModal}
-                                    className="px-6 py-3.5 !rounded-2xl font-bold bg-gray-50 text-gray-500 hover:bg-gray-100 border-none transition-all"
-                                >
-                                    Batal
-                                </SecondaryButton>
-                                <PrimaryButton
-                                    className="px-10 py-3.5 !rounded-2xl font-bold shadow-xl shadow-emerald-600/30 hover:shadow-emerald-600/40 hover:-translate-y-0.5 transition-all text-sm tracking-widest bg-gradient-to-r from-emerald-600 to-teal-700"
-                                    disabled={processing || !data.item_id}
-                                >
-                                    {processing ? 'Menyimpan...' : 'Simpan Perawatan'}
-                                </PrimaryButton>
-                            </div>
-                        </form>
+                    {/* Keterangan */}
+                    <div className="space-y-1">
+                        <InputLabel htmlFor="keterangan" value="Rincian Kerusakan / Tindakan" className="text-[9pt] font-bold text-gray-400 uppercase tracking-widest ml-1" />
+                        <textarea
+                            id="keterangan"
+                            className="w-full border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-2xl py-3 text-[9pt] font-medium bg-gray-50/50 transition-all"
+                            rows={3}
+                            value={data.keterangan}
+                            onChange={(e) => setData('keterangan', e.target.value)}
+                            placeholder="Tuliskan detail part yang diganti atau kendala aset..."
+                        ></textarea>
+                        <InputError message={errors.keterangan} />
                     </div>
                 </div>
-            </Modal>
+            </FormModal>
 
             <ConfirmationModal
                 show={isDeleteModalOpen}

@@ -5,6 +5,13 @@ import Modal from '@/Components/Modal';
 import SecondaryButton from '@/Components/SecondaryButton';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SearchableSelect from '@/Components/SearchableSelect';
+import FormModal from '@/Components/FormModal';
+
+const Icons = {
+    Print: (props: any) => <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>,
+    FileText: (props: any) => <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
+    Table: (props: any) => <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>,
+};
 
 interface Ruangan {
     id: number;
@@ -160,15 +167,15 @@ export default function LaporanIndex({ ruangans }: Props) {
 
     return (
         <AuthenticatedLayout
-            header={<h2 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-300 dark:to-white tracking-tight">Pusat Laporan Inventaris</h2>}
+            header={<h2 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-700 to-gray-900 tracking-tight">Pusat Laporan Inventaris</h2>}
         >
             <Head title="Cetak Laporan" />
 
-            <div className="py-12 bg-gray-50/50 dark:bg-gray-900/50 min-h-screen transition-colors duration-300">
+            <div className="py-12 bg-gray-50/50 min-h-screen transition-colors duration-300">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="mb-10">
-                        <h3 className="text-3xl font-black text-gray-900 dark:text-gray-100 mb-2">Pilih Format Laporan</h3>
-                        <p className="text-gray-500 dark:text-gray-400 font-medium tracking-tight">Klik pada salah satu kategori di bawah untuk mengatur format cetakan dan mengunduh PDF atau Excel.</p>
+                        <h3 className="text-3xl font-black text-gray-900 mb-2">Pilih Format Laporan</h3>
+                        <p className="text-gray-500 font-medium tracking-tight">Klik pada salah satu kategori di bawah untuk mengatur format cetakan dan mengunduh PDF atau Excel.</p>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -176,15 +183,15 @@ export default function LaporanIndex({ ruangans }: Props) {
                             <div 
                                 key={index}
                                 onClick={() => openPrintModal(menu)}
-                                className={`group relative block overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-xl shadow-gray-200/50 dark:shadow-none ring-1 ring-black/5 dark:ring-white/10 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl active:scale-95 cursor-pointer`}
+                                className={`group relative block overflow-hidden rounded-3xl bg-white shadow-xl shadow-gray-200/50 ring-1 ring-black/5 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl active:scale-95 cursor-pointer`}
                             >
                                 <div className={`h-2 w-full bg-gradient-to-r ${menu.color}`} />
                                 <div className="p-8">
                                     <div className={`mb-6 inline-flex p-4 rounded-2xl bg-gradient-to-br ${menu.color} text-white shadow-lg shadow-gray-200 transition-transform duration-500 group-hover:rotate-12`}>
                                         {menu.icon}
                                     </div>
-                                    <h4 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-1">{menu.title}</h4>
-                                    <p className="text-sm text-gray-400 dark:text-gray-500 font-medium mb-6">{menu.subtitle}</p>
+                                    <h4 className="text-xl font-bold text-gray-900 mb-1">{menu.title}</h4>
+                                    <p className="text-sm text-gray-400 font-medium mb-6">{menu.subtitle}</p>
                                     
                                     <div className="flex items-center gap-3">
                                         <div className="flex items-center gap-1.5 text-indigo-600 font-bold text-sm">
@@ -193,7 +200,7 @@ export default function LaporanIndex({ ruangans }: Props) {
                                         </div>
                                         {menu.kib !== 'ALL' && (
                                             <>
-                                                <span className="text-gray-300 dark:text-gray-600">|</span>
+                                                <span className="text-gray-300 ">|</span>
                                                 <div className="flex items-center gap-1.5 text-emerald-600 font-bold text-sm">
                                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                                                     Excel
@@ -202,7 +209,7 @@ export default function LaporanIndex({ ruangans }: Props) {
                                         )}
                                         {kibsWithRoomFilter.includes(menu.kib) && (
                                             <>
-                                                <span className="text-gray-300 dark:text-gray-600">|</span>
+                                                <span className="text-gray-300 ">|</span>
                                                 <div className="flex items-center gap-1.5 text-violet-600 font-bold text-sm">
                                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
                                                     Per Ruangan
@@ -211,7 +218,7 @@ export default function LaporanIndex({ ruangans }: Props) {
                                         )}
                                     </div>
                                 </div>
-                                <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-gray-50 dark:bg-gray-700/30 rounded-full group-hover:bg-indigo-50 dark:group-hover:bg-indigo-500/20 transition-colors duration-300" />
+                                <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-gray-50 rounded-full group-hover:bg-indigo-50 transition-colors duration-300" />
                             </div>
                         ))}
                     </div>
@@ -219,65 +226,82 @@ export default function LaporanIndex({ ruangans }: Props) {
             </div>
 
             {/* Print Settings Modal */}
-            <Modal show={isPrintModalOpen} onClose={() => setIsPrintModalOpen(false)} maxWidth="2xl">
-                <div className="p-8 overflow-y-auto max-h-[90vh]">
-                    <div className="flex items-center gap-4 mb-8">
-                        <div className={`p-3 rounded-2xl bg-gradient-to-br ${selectedKib?.color} text-white shadow-lg`}>
-                            {selectedKib?.icon}
-                        </div>
-                        <div>
-                            <h3 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight">Pengaturan Cetak</h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{selectedKib?.title}</p>
-                        </div>
-                    </div>
-
-                    <div className="space-y-6">
-
-                        {/* Room Filter — only for KIB B & E */}
-                        {showRoomFilter && (
-                            <div>
-                                <label className="block text-xs font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">
-                                    Filter Ruangan
-                                    <span className="ml-2 normal-case font-normal text-gray-400 dark:text-gray-500">(opsional — kosong = semua ruangan)</span>
-                                </label>
-                                <SearchableSelect
-                                    value={selectedRuanganId}
-                                    onChange={(val: any) => setSelectedRuanganId(val ?? '')}
-                                    options={[
-                                        { value: '', label: '— Semua Ruangan —' },
-                                        ...ruangans.map((r) => ({
-                                            value: String(r.id),
-                                            label: r.kode_ruangan
-                                                ? `[${r.kode_ruangan}] ${r.nama_ruangan}`
-                                                : r.nama_ruangan,
-                                        }))
-                                    ]}
-                                    placeholder="Cari ruangan..."
-                                    isClearable
-                                />
-                                {selectedRuanganId && (
-                                    <p className="mt-2 text-xs text-indigo-600 dark:text-indigo-400 font-semibold flex items-center gap-1">
-                                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        Data yang dicetak hanya untuk ruangan yang dipilih.
-                                    </p>
-                                )}
-                            </div>
+            <FormModal
+                show={isPrintModalOpen}
+                onClose={() => setIsPrintModalOpen(false)}
+                title="Pengaturan Cetak"
+                subtitle={selectedKib?.title}
+                maxWidth="2xl"
+                accentColor="indigo"
+                icon={selectedKib?.icon}
+                footer={
+                    <div className="flex items-center justify-end gap-3 w-full">
+                        <SecondaryButton onClick={() => setIsPrintModalOpen(false)}>
+                            Batal
+                        </SecondaryButton>
+                        <PrimaryButton
+                            className="!rounded-xl shadow-lg shadow-indigo-100"
+                            onClick={handlePrint}
+                        >
+                            <Icons.FileText className="w-4 h-4 mr-2" />
+                            Cetak PDF
+                        </PrimaryButton>
+                        {selectedKib?.kib !== 'ALL' && (
+                            <button
+                                onClick={handleExcel}
+                                className="inline-flex items-center px-4 py-2 bg-emerald-600 border border-transparent rounded-xl font-semibold text-xs text-white uppercase tracking-widest hover:bg-emerald-700 active:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-all shadow-lg shadow-emerald-100"
+                            >
+                                <Icons.Table className="w-4 h-4 mr-2" />
+                                Export Excel
+                            </button>
                         )}
+                    </div>
+                }
+            >
+                <div className="space-y-8">
+                    {/* Room Filter — only for KIB B & E */}
+                    {showRoomFilter && (
+                        <div className="space-y-2">
+                            <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
+                                Filter Ruangan (Opsional)
+                            </label>
+                            <SearchableSelect
+                                value={selectedRuanganId}
+                                onChange={(val: any) => setSelectedRuanganId(val ?? '')}
+                                options={[
+                                    { value: '', label: '— Semua Ruangan —' },
+                                    ...ruangans.map((r) => ({
+                                        value: String(r.id),
+                                        label: r.kode_ruangan
+                                            ? `[${r.kode_ruangan}] ${r.nama_ruangan}`
+                                            : r.nama_ruangan,
+                                    }))
+                                ]}
+                                placeholder="Cari ruangan..."
+                                isClearable
+                            />
+                            {selectedRuanganId && (
+                                <p className="text-[10px] text-indigo-500 font-bold italic ml-1">
+                                    * Laporan hanya akan menampilkan aset di ruangan terpilih.
+                                </p>
+                            )}
+                        </div>
+                    )}
 
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {/* Paper Size */}
-                        <div>
-                            <label className="block text-xs font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Ukuran Kertas</label>
-                            <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-3">
+                            <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Ukuran Kertas</label>
+                            <div className="grid grid-cols-2 gap-2">
                                 {['a4', 'folio', 'letter', 'legal'].map((size) => (
                                     <button
                                         key={size}
+                                        type="button"
                                         onClick={() => setPrintSettings({ ...printSettings, paper_size: size })}
-                                        className={`px-4 py-3 rounded-xl border-2 font-bold text-sm transition-all ${
+                                        className={`px-4 py-3 rounded-xl border-2 font-bold text-xs transition-all ${
                                             printSettings.paper_size === size
-                                                ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-400 shadow-sm'
-                                                : 'border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:border-gray-200 dark:hover:border-gray-600'
+                                                ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                                                : 'border-gray-50 bg-gray-50 text-gray-400 hover:border-gray-200'
                                         }`}
                                     >
                                         {size.toUpperCase()}
@@ -286,46 +310,24 @@ export default function LaporanIndex({ ruangans }: Props) {
                             </div>
                         </div>
 
-                        {/* Font Size */}
-                        <div>
-                            <label className="block text-xs font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Ukuran Font</label>
-                            <div className="grid grid-cols-5 gap-2">
-                                {['8pt', '9pt', '10pt', '11pt', '12pt'].map((size) => (
-                                    <button
-                                        key={size}
-                                        onClick={() => setPrintSettings({ ...printSettings, font_size: size })}
-                                        className={`py-2 rounded-lg border-2 font-bold text-xs transition-all ${
-                                            printSettings.font_size === size
-                                                ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-                                                : 'border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:border-gray-200 dark:hover:border-gray-600'
-                                        }`}
-                                    >
-                                        {size}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
                         {/* Orientation */}
-                        <div>
-                            <label className="block text-xs font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Orientasi</label>
-                            <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-3">
+                            <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Orientasi</label>
+                            <div className="grid grid-cols-2 gap-2">
                                 {[
-                                    { id: 'portrait', label: 'Portrait', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
-                                    { id: 'landscape', label: 'Landscape', icon: 'M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z' }
+                                    { id: 'portrait', label: 'Portrait' },
+                                    { id: 'landscape', label: 'Landscape' }
                                 ].map((opt) => (
                                     <button
                                         key={opt.id}
+                                        type="button"
                                         onClick={() => setPrintSettings({ ...printSettings, orientation: opt.id })}
-                                        className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 font-bold text-sm transition-all ${
+                                        className={`px-4 py-3 rounded-xl border-2 font-bold text-xs transition-all ${
                                             printSettings.orientation === opt.id
-                                                ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-400 shadow-sm'
-                                                : 'border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:border-gray-200 dark:hover:border-gray-600'
+                                                ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                                                : 'border-gray-50 bg-gray-50 text-gray-400 hover:border-gray-200'
                                         }`}
                                     >
-                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={opt.icon} />
-                                        </svg>
                                         {opt.label}
                                     </button>
                                 ))}
@@ -333,26 +335,28 @@ export default function LaporanIndex({ ruangans }: Props) {
                         </div>
                     </div>
 
-                    <div className="mt-10 flex gap-3">
-                        <SecondaryButton className="flex-1 !rounded-2xl justify-center py-4 text-sm font-bold tracking-widest uppercase" onClick={() => setIsPrintModalOpen(false)}>
-                            Batal
-                        </SecondaryButton>
-                        <PrimaryButton className="flex-1 !rounded-2xl justify-center py-4 text-sm font-bold tracking-widest uppercase shadow-lg shadow-indigo-100" onClick={handlePrint}>
-                            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-                            PDF
-                        </PrimaryButton>
-                        {selectedKib?.kib !== 'ALL' && (
-                            <button
-                                onClick={handleExcel}
-                                className="flex-1 inline-flex items-center justify-center rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white py-4 text-sm font-bold tracking-widest uppercase shadow-lg shadow-emerald-100 transition-all"
-                            >
-                                <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                                Excel
-                            </button>
-                        )}
+                    {/* Font Size */}
+                    <div className="space-y-3">
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Ukuran Font</label>
+                        <div className="grid grid-cols-5 gap-2">
+                            {['8pt', '9pt', '10pt', '11pt', '12pt'].map((size) => (
+                                <button
+                                    key={size}
+                                    type="button"
+                                    onClick={() => setPrintSettings({ ...printSettings, font_size: size })}
+                                    className={`py-2 rounded-lg border-2 font-bold text-[10px] transition-all ${
+                                        printSettings.font_size === size
+                                            ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                                            : 'border-gray-50 bg-gray-50 text-gray-400 hover:border-gray-200'
+                                    }`}
+                                >
+                                    {size}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
-            </Modal>
+            </FormModal>
         </AuthenticatedLayout>
     );
 }

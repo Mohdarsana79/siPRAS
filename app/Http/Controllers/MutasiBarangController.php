@@ -29,6 +29,14 @@ class MutasiBarangController extends Controller
         ]);
     }
 
+    /**
+     * Defensive show route.
+     */
+    public function show()
+    {
+        return redirect()->route('mutasi.index');
+    }
+
     public function store(Request $request)
     {
         $request->validate([

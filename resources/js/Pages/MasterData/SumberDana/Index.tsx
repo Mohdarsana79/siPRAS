@@ -2,6 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, router } from '@inertiajs/react';
 import React, { useState, useEffect } from 'react';
 import Modal from '@/Components/Modal';
+import FormModal from '@/Components/FormModal';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -26,6 +27,12 @@ interface PaginatedSumberDana {
     total: number;
 }
 
+interface Props {
+    sumberDanas: PaginatedSumberDana;
+    filters: { search?: string };
+    flash: { success: string | null; error: string | null };
+}
+
 const Icons = {
     Vault: (props: any) => (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><circle cx="12" cy="12" r="3" /></svg>
@@ -47,13 +54,22 @@ const Icons = {
     )
 };
 
-export default function Index({ sumberDanas, filters }: { sumberDanas: PaginatedSumberDana, filters: { search?: string } }) {
+export default function Index({ sumberDanas, filters, flash }: Props) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editingId, setEditingId] = useState<number | null>(null);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isUsedModalOpen, setIsUsedModalOpen] = useState(false);
+    const [usedAssets, setUsedAssets] = useState('');
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
+
+    useEffect(() => {
+        if (flash.error?.startsWith('used:')) {
+            setUsedAssets(flash.error.split('used:')[1]);
+            setIsUsedModalOpen(true);
+        }
+    }, [flash.error]);
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
@@ -176,7 +192,7 @@ export default function Index({ sumberDanas, filters }: { sumberDanas: Paginated
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
-                                {sumberDanas.data.map((sumber) => (
+                                {sumberDanas.data.map((sumber: SumberDana) => (
                                     <tr key={sumber.id} className="hover:bg-gray-50/50 transition-colors">
                                         <td className="px-6 py-4 font-bold text-gray-900">{sumber.nama_sumber}</td>
                                         <td className="px-6 py-4">
@@ -224,82 +240,47 @@ export default function Index({ sumberDanas, filters }: { sumberDanas: Paginated
 
             </div>
 
-            {/* Premium Colorful Modal */}
-            <Modal show={isModalOpen} onClose={closeModal} maxWidth="lg">
-                <div className="bg-white/95 backdrop-blur-xl max-h-[90vh] overflow-y-auto custom-scrollbar rounded-[2.5rem]">
-                    {/* Artistic Header */}
-                    <div className={`px-8 pt-10 pb-12 relative flex flex-col items-center text-center overflow-hidden ${isEditing ? 'bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-600' : 'bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600'}`}>
-                        {/* Decorative Background Circles */}
-                        <div className="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
-                        <div className="absolute bottom-0 left-0 -ml-10 -mb-10 w-40 h-40 bg-black/10 rounded-full blur-3xl"></div>
-
-                        <div className="w-20 h-20 rounded-[2rem] bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center mb-5 shadow-2xl relative z-10">
-                            {isEditing ? <Icons.Edit className="w-8 h-8 text-white" /> : <Icons.Plus className="w-8 h-8 text-white" />}
-                        </div>
-
-                        <h3 className="text-2xl font-black text-white tracking-tight relative z-10">
-                            {isEditing ? 'UPDATE SUMBER DANA' : 'TAMBAH SUMBER DANA'}
-                        </h3>
-                        <p className="text-white/80 text-xs font-bold uppercase tracking-[0.2em] mt-2 relative z-10">
-                            {isEditing ? 'Sinkronisasi Asal Anggaran' : 'Registrasi Saluran Pendanaan Baru'}
-                        </p>
+            {/* Form Modal - Add / Edit */}
+            <FormModal
+                show={isModalOpen}
+                onClose={closeModal}
+                title={isEditing ? 'Update Sumber Dana' : 'Tambah Sumber Dana'}
+                subtitle={isEditing ? 'Sinkronisasi Asal Anggaran' : 'Registrasi Saluran Pendanaan Baru'}
+                maxWidth="lg"
+                accentColor="emerald"
+                icon={isEditing ? <Icons.Edit className="w-6 h-6" /> : <Icons.Plus className="w-6 h-6" />}
+                processing={processing}
+                onSubmit={submit}
+                submitLabel={isEditing ? 'Simpan Perubahan' : 'Tambah Sumber Dana'}
+            >
+                <div className="space-y-6">
+                    <div className="space-y-1">
+                        <InputLabel htmlFor="kode" value="Kode Singkatan (Contoh: BOS, APBD)" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1" />
+                        <TextInput
+                            id="kode"
+                            className="w-full bg-gray-50/50 font-black tracking-widest uppercase"
+                            value={data.kode}
+                            onChange={(e) => setData('kode', e.target.value)}
+                            placeholder="KODE DANA..."
+                            required
+                        />
+                        <InputError message={errors.kode} />
                     </div>
 
-                    <form onSubmit={submit} className="px-8 pb-8 -mt-6 bg-white rounded-t-[2.5rem] relative z-20 space-y-8 pt-8">
-                        <div className="space-y-6">
-                            <div className="group/field relative">
-                                <InputLabel htmlFor="kode" value="KODE SINGKATAN (CONTOH: BOS, APBD)" className="mb-2 ml-1 text-[10px] font-black text-gray-400 tracking-widest" />
-                                <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-300 group-focus-within/field:text-indigo-500">
-                                        <Icons.Plus className="w-4 h-4" />
-                                    </div>
-                                    <TextInput
-                                        id="kode"
-                                        className="w-full pl-11 rounded-2xl border-gray-100 bg-gray-50 py-4 font-black text-gray-800 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm uppercase placeholder:text-gray-300 tracking-widest"
-                                        value={data.kode}
-                                        onChange={(e) => setData('kode', e.target.value)}
-                                        placeholder="KODE DANA..."
-                                        required
-                                    />
-                                </div>
-                                <InputError message={errors.kode} className="mt-2 ml-1 text-[10px] font-bold" />
-                            </div>
-
-                            <div className="group/field relative">
-                                <InputLabel htmlFor="nama_sumber" value="NAMA LENGKAP SUMBER DANA" className="mb-2 ml-1 text-[10px] font-black text-gray-400 tracking-widest" />
-                                <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-300 group-focus-within/field:text-indigo-500">
-                                        <Icons.Vault className="w-4 h-4" />
-                                    </div>
-                                    <TextInput
-                                        id="nama_sumber"
-                                        className="w-full pl-11 rounded-2xl border-gray-100 bg-gray-50 py-4 font-black text-gray-800 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm placeholder:text-gray-300 tracking-tight"
-                                        value={data.nama_sumber}
-                                        onChange={(e) => setData('nama_sumber', e.target.value)}
-                                        placeholder="MASUKKAN NAMA SUMBER..."
-                                        required
-                                    />
-                                </div>
-                                <InputError message={errors.nama_sumber} className="mt-2 ml-1 text-[10px] font-bold" />
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-4 pt-4">
-                            <SecondaryButton type="button" onClick={closeModal} className="flex-1 !rounded-2xl !py-4 justify-center !border-none !bg-gray-100 !text-gray-500 font-black uppercase tracking-widest text-[10px] hover:!bg-gray-200 transition-all">
-                                BATAL
-                            </SecondaryButton>
-                            <PrimaryButton
-                                className={`flex-[1.5] !rounded-2xl !py-4 shadow-xl border-none justify-center ${isEditing ? '!bg-gradient-to-r from-indigo-600 to-violet-700 shadow-indigo-100' : '!bg-gradient-to-r from-emerald-600 to-teal-700 shadow-emerald-100'} hover:-translate-y-1 active:translate-y-0 transition-all`}
-                                disabled={processing}
-                            >
-                                <span className="font-black text-white tracking-[0.15em] text-[11px] uppercase">
-                                    {processing ? 'PROSES...' : (isEditing ? 'SIMPAN PERUBAHAN' : 'TAMBAH DATA')}
-                                </span>
-                            </PrimaryButton>
-                        </div>
-                    </form>
+                    <div className="space-y-1">
+                        <InputLabel htmlFor="nama_sumber" value="Nama Lengkap Sumber Dana" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1" />
+                        <TextInput
+                            id="nama_sumber"
+                            className="w-full bg-gray-50/50 font-bold"
+                            value={data.nama_sumber}
+                            onChange={(e) => setData('nama_sumber', e.target.value)}
+                            placeholder="Masukkan nama sumber dana..."
+                            required
+                        />
+                        <InputError message={errors.nama_sumber} />
+                    </div>
                 </div>
-            </Modal>
+            </FormModal>
 
             <ConfirmationModal
                 show={isDeleteModalOpen}
@@ -308,6 +289,16 @@ export default function Index({ sumberDanas, filters }: { sumberDanas: Paginated
                 title="Hapus Sumber Dana?"
                 message="Data yang dihapus mungkin krusial untuk pelaporan aset. Apakah Anda yakin ingin melanjutkan?"
                 processing={processing}
+            />
+
+            <ConfirmationModal
+                show={isUsedModalOpen}
+                onClose={() => setIsUsedModalOpen(false)}
+                onConfirm={() => setIsUsedModalOpen(false)}
+                title="Gagal Menghapus"
+                message={`Data ini tidak dapat dihapus karena masih digunakan oleh: ${usedAssets}. Silakan ubah atau hapus aset yang terkait terlebih dahulu.`}
+                confirmText="Tutup"
+                cancelText=""
             />
         </AuthenticatedLayout>
     );

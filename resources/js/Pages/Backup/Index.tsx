@@ -2,6 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
 import React, { useRef, useState } from 'react';
 import Modal from '@/Components/Modal';
+import FormModal from '@/Components/FormModal';
 import DangerButton from '@/Components/DangerButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
@@ -292,131 +293,101 @@ export default function BackupIndex() {
                     </button>
                 </div>
 
-                <Modal show={confirmingUserDeletion} onClose={closeModal}>
-                    <form onSubmit={resetDatabase} className="p-6 sm:p-8">
-                        <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                            <span className="p-2 rounded-lg bg-red-50 text-red-600 block shrink-0">
-                                <TrashIcon className="w-6 h-6" />
-                            </span>
-                            Apakah Anda yakin ingin mengosongkan database?
-                        </h2>
-
-                        <p className="mt-4 text-sm text-gray-600 leading-relaxed">
-                            <strong className="text-red-600">Peringatan Keras:</strong> Seluruh data operasional, master data, dan aset di sistem ini akan dihapus secara permanen, kecuali data Pengguna dan Profil Sekolah. Tindakan ini <strong className="text-red-500">TIDAK BISA</strong> dibatalkan tanpa file backup yang sesuai.
-                        </p>
-                        
-                        <p className="mt-4 text-sm text-gray-600 mb-6 font-medium">
-                            Silakan masukkan password akun Anda untuk mengonfirmasi tindakan ini:
-                        </p>
-
-                        <div className="mt-2">
-                            <InputLabel htmlFor="password" value="Password" className="sr-only" />
-
-                            <TextInput
-                                id="password"
-                                type="password"
-                                name="password"
-                                ref={passwordInput}
-                                value={resetData.password}
-                                onChange={(e) => setResetData('password', e.target.value)}
-                                className="mt-1 block w-full px-4 py-3"
-                                isFocused
-                                placeholder="Password Anda"
-                            />
-
-                            <InputError message={resetErrors.password} className="mt-2" />
-                        </div>
-
-                        <div className="mt-8 flex items-center justify-end gap-3">
-                            <SecondaryButton onClick={closeModal} className="px-6 py-3 rounded-xl border-gray-200 shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:ring-offset-2 focus:ring-gray-200">
-                                Batal
-                            </SecondaryButton>
-
-                            <DangerButton className="px-6 py-3 rounded-xl shadow-sm border border-transparent bg-red-600 hover:bg-red-700 focus:ring-red-500 focus:ring-offset-2 flex items-center gap-2" disabled={processingReset}>
-                                <TrashIcon className="w-4 h-4" />
-                                {processingReset ? 'Memproses...' : 'Kosongkan Sekarang'}
-                            </DangerButton>
-                        </div>
-                    </form>
-                </Modal>
-
-                <Modal show={confirmingRestore} onClose={() => setConfirmingRestore(false)}>
-                    <div className="p-6 sm:p-8">
-                        <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                            <span className="p-2 rounded-lg bg-orange-50 text-orange-600 block shrink-0">
-                                <UploadCloudIcon className="w-6 h-6" />
-                            </span>
-                            Konfirmasi Restore Database
-                        </h2>
-
-                        <p className="mt-4 text-sm text-gray-600 leading-relaxed">
-                            Apakah Anda yakin ingin melakukan <strong className="text-orange-600">Restore Database</strong>? 
-                            Proses ini akan menghapus seluruh data sistem saat ini dan menggantinya dengan data dari file backup yang Anda unggah.
-                        </p>
-                        
-                        <p className="mt-2 text-sm text-red-600 font-medium italic">
-                            * Pastikan file yang Anda gunakan adalah file backup yang benar.
-                        </p>
-
-                        <div className="mt-8 flex items-center justify-end gap-3">
-                            <SecondaryButton onClick={() => setConfirmingRestore(false)} className="px-6 py-3 rounded-xl border-gray-200 shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:ring-offset-2 focus:ring-gray-200">
-                                Batal
-                            </SecondaryButton>
-
-                            <button
-                                onClick={executeRestore}
-                                className="px-6 py-3 rounded-xl shadow-sm border border-transparent bg-gradient-to-r from-orange-500 to-red-600 text-white font-semibold hover:from-orange-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all transform hover:-translate-y-0.5 flex items-center gap-2"
-                            >
-                                <UploadCloudIcon className="w-4 h-4" />
-                                Ya, Restore Sekarang
-                            </button>
-                        </div>
-                    </div>
-                </Modal>
-
-                <Modal 
-                    show={showProgress} 
-                    onClose={() => {}} // Disable closing during progress
-                    maxWidth="md"
-                >
-                    <div className="p-8 text-center">
-                        <div className="mb-6 relative inline-flex items-center justify-center">
-                            <div className="w-20 h-20 rounded-full bg-orange-50 flex items-center justify-center animate-pulse">
-                                <UploadCloudIcon className="w-10 h-10 text-orange-600" />
-                            </div>
-                        </div>
-                        
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">Proses Restore Sedang Berjalan</h3>
-                        <p className="text-sm text-gray-600 mb-8 max-w-xs mx-auto">
-                            Mohon tunggu sejenak, jangan tutup atau muat ulang halaman ini sampai proses selesai.
-                        </p>
-
-                        <div className="relative pt-1">
-                            <div className="flex mb-2 items-center justify-between">
-                                <div>
-                                    <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-orange-600 bg-orange-100">
-                                        Status
-                                    </span>
-                                </div>
-                                <div className="text-right">
-                                    <span className="text-xs font-semibold inline-block text-orange-600">
-                                        {Math.round(restoreProgress)}%
-                                    </span>
-                                </div>
-                            </div>
-                            <div className="overflow-hidden h-3 mb-4 text-xs flex rounded-full bg-gray-100 shadow-inner">
-                                <div 
-                                    style={{ width: `${restoreProgress}%` }}
-                                    className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-gradient-to-r from-orange-400 to-red-500 transition-all duration-500 ease-out h-full"
-                                ></div>
-                            </div>
-                        </div>
-                        
-                        <p className="text-xs text-gray-400 italic">
-                            {restoreProgress < 100 ? 'Sedang melakukan pemulihan struktur dan data...' : 'Berhasil! Sinkronisasi data selesai.'}
+            {/* Reset Database Confirmation */}
+            <FormModal
+                show={confirmingUserDeletion}
+                onClose={closeModal}
+                title="Reset Database"
+                subtitle="Kosongkan seluruh data operasional"
+                maxWidth="lg"
+                accentColor="rose"
+                icon={<TrashIcon className="w-6 h-6" />}
+                onSubmit={resetDatabase}
+                submitLabel="Kosongkan Sekarang"
+                processing={processingReset}
+            >
+                <div className="space-y-6">
+                    <div className="p-4 bg-rose-50 rounded-2xl border border-rose-100">
+                        <p className="text-sm text-rose-700 leading-relaxed">
+                            <strong className="font-black text-rose-800 uppercase tracking-tight">Peringatan Keras:</strong><br/>
+                            Seluruh data operasional, master data, dan aset di sistem ini akan dihapus secara permanen. Tindakan ini <strong className="font-bold">TIDAK BISA</strong> dibatalkan tanpa file backup yang sesuai.
                         </p>
                     </div>
-                </Modal>
+                    
+                    <div className="space-y-2">
+                        <InputLabel htmlFor="password" value="Masukkan Password untuk Konfirmasi" className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1" />
+                        <TextInput
+                            id="password"
+                            type="password"
+                            name="password"
+                            ref={passwordInput}
+                            value={resetData.password}
+                            onChange={(e) => setResetData('password', e.target.value)}
+                            className="w-full bg-gray-50/50 font-bold"
+                            placeholder="Password Anda"
+                            isFocused
+                        />
+                        <InputError message={resetErrors.password} />
+                    </div>
+                </div>
+            </FormModal>
+
+            {/* Restore Database Confirmation */}
+            <FormModal
+                show={confirmingRestore}
+                onClose={() => setConfirmingRestore(false)}
+                title="Konfirmasi Restore"
+                subtitle="Pulihkan data dari file cadangan"
+                maxWidth="lg"
+                accentColor="amber"
+                icon={<UploadCloudIcon className="w-6 h-6" />}
+                onSubmit={(e: React.FormEvent) => { e.preventDefault(); executeRestore(); }}
+                submitLabel="Ya, Restore Sekarang"
+            >
+                <div className="space-y-4">
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                        Apakah Anda yakin ingin melakukan <strong className="text-amber-600">Restore Database</strong>? 
+                        Proses ini akan menghapus seluruh data sistem saat ini dan menggantinya dengan data dari file backup yang Anda unggah.
+                    </p>
+                    <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100">
+                        <p className="text-xs text-amber-700 font-bold italic">
+                            * Pastikan file yang Anda gunakan adalah file backup yang benar (ekstensi .rsv).
+                        </p>
+                    </div>
+                </div>
+            </FormModal>
+
+            {/* Restore Progress Modal */}
+            <Modal show={showProgress} onClose={() => {}} maxWidth="md">
+                <div className="p-10 text-center">
+                    <div className="mb-8 relative inline-flex items-center justify-center">
+                        <div className="w-24 h-24 rounded-full bg-indigo-50 flex items-center justify-center animate-pulse">
+                            <UploadCloudIcon className="w-12 h-12 text-indigo-600" />
+                        </div>
+                    </div>
+                    
+                    <h3 className="text-2xl font-black text-gray-900 tracking-tight mb-2 uppercase">Proses Pemulihan</h3>
+                    <p className="text-sm text-gray-500 font-medium mb-10 max-w-xs mx-auto leading-relaxed">
+                        Jangan tutup atau muat ulang halaman ini sampai proses selesai.
+                    </p>
+
+                    <div className="space-y-4">
+                        <div className="flex justify-between items-end px-1">
+                            <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Progress</span>
+                            <span className="text-xl font-black text-gray-900 tabular-nums">{Math.round(restoreProgress)}%</span>
+                        </div>
+                        <div className="h-4 bg-gray-100 rounded-full overflow-hidden shadow-inner border border-gray-50">
+                            <div 
+                                style={{ width: `${restoreProgress}%` }}
+                                className="h-full bg-gradient-to-r from-indigo-500 to-blue-600 transition-all duration-500 ease-out shadow-lg"
+                            ></div>
+                        </div>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest animate-pulse">
+                            {restoreProgress < 100 ? 'Sedang menulis ulang struktur data...' : 'Sinkronisasi berhasil! Menyelesaikan...'}
+                        </p>
+                    </div>
+                </div>
+            </Modal>
 
             </div>
         </AuthenticatedLayout>
