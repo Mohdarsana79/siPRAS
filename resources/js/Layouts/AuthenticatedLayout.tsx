@@ -16,7 +16,8 @@ export default function Authenticated({
 
     const isDashboard = route().current('dashboard');
     const isSchoolProfile = route().current('school-profile.index') || route().current('school-profile.update');
-    const showProfileWarning = typeof route === 'function' ? (!hasSchoolProfile && !isDashboard && !isSchoolProfile) : false;
+    const isBackupRestore = route().current('backup-restore.index');
+    const showProfileWarning = typeof route === 'function' ? (!hasSchoolProfile && !isDashboard && !isSchoolProfile && !isBackupRestore) : false;
 
     useEffect(() => {
         if (flash.success) {

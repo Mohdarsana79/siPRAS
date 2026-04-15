@@ -60,10 +60,18 @@ class MasterKategoriController extends Controller
     {
         $request->validate([
             'master_rincian_objek_id' => 'required|exists:master_rincian_objeks,id',
-            'kode_sub_rincian_objek'  => 'required|string|size:2',
+            'kode_sub_rincian_objek'  => [
+                'required',
+                'string',
+                'size:2',
+                \Illuminate\Validation\Rule::unique('master_kategoris')->where(function ($query) use ($request) {
+                    return $query->where('master_rincian_objek_id', $request->master_rincian_objek_id);
+                }),
+            ],
             'nama_kategori'           => 'required|string|max:255|unique:master_kategoris,nama_kategori',
         ], [
             'nama_kategori.unique' => 'Kategori sudah ada',
+            'kode_sub_rincian_objek.unique' => 'Kode sub rincian ini sudah ada untuk rincian objek tersebut',
         ]);
 
         MasterKategori::create($request->all());
@@ -75,10 +83,18 @@ class MasterKategoriController extends Controller
     {
         $request->validate([
             'master_rincian_objek_id' => 'required|exists:master_rincian_objeks,id',
-            'kode_sub_rincian_objek'  => 'required|string|size:2',
+            'kode_sub_rincian_objek'  => [
+                'required',
+                'string',
+                'size:2',
+                \Illuminate\Validation\Rule::unique('master_kategoris')->where(function ($query) use ($request) {
+                    return $query->where('master_rincian_objek_id', $request->master_rincian_objek_id);
+                })->ignore($master_kategori->id),
+            ],
             'nama_kategori'           => 'required|string|max:255|unique:master_kategoris,nama_kategori,' . $master_kategori->id,
         ], [
             'nama_kategori.unique' => 'Kategori sudah ada',
+            'kode_sub_rincian_objek.unique' => 'Kode sub rincian ini sudah ada untuk rincian objek tersebut',
         ]);
 
         $master_kategori->update($request->all());

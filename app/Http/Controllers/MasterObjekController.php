@@ -12,10 +12,19 @@ class MasterObjekController extends Controller
         $request->validate([
             'kode_kelompok' => 'required|string|size:1',
             'kode_jenis' => 'required|string|size:1',
-            'kode_objek' => 'required|string|size:2',
+            'kode_objek' => [
+                'required',
+                'string',
+                'size:2',
+                \Illuminate\Validation\Rule::unique('master_objeks')->where(function ($query) use ($request) {
+                    return $query->where('kode_kelompok', $request->kode_kelompok)
+                                 ->where('kode_jenis', $request->kode_jenis);
+                }),
+            ],
             'nama_objek' => 'required|string|max:255|unique:master_objeks,nama_objek',
         ], [
             'nama_objek.unique' => 'objek sudah ada',
+            'kode_objek.unique' => 'Kombinasi kode objek ini sudah ada',
         ]);
 
         MasterObjek::create($request->all());
@@ -28,10 +37,19 @@ class MasterObjekController extends Controller
         $request->validate([
             'kode_kelompok' => 'required|string|size:1',
             'kode_jenis' => 'required|string|size:1',
-            'kode_objek' => 'required|string|size:2',
+            'kode_objek' => [
+                'required',
+                'string',
+                'size:2',
+                \Illuminate\Validation\Rule::unique('master_objeks')->where(function ($query) use ($request) {
+                    return $query->where('kode_kelompok', $request->kode_kelompok)
+                                 ->where('kode_jenis', $request->kode_jenis);
+                })->ignore($master_objek->id),
+            ],
             'nama_objek' => 'required|string|max:255|unique:master_objeks,nama_objek,' . $master_objek->id,
         ], [
             'nama_objek.unique' => 'objek sudah ada',
+            'kode_objek.unique' => 'Kombinasi kode objek ini sudah ada',
         ]);
 
         $master_objek->update($request->all());

@@ -11,10 +11,18 @@ class MasterRincianObjekController extends Controller
     {
         $request->validate([
             'master_objek_id'    => 'required|exists:master_objeks,id',
-            'kode_rincian_objek' => 'required|string|size:2',
+            'kode_rincian_objek' => [
+                'required',
+                'string',
+                'size:2',
+                \Illuminate\Validation\Rule::unique('master_rincian_objeks')->where(function ($query) use ($request) {
+                    return $query->where('master_objek_id', $request->master_objek_id);
+                }),
+            ],
             'nama_rincian_objek' => 'required|string|max:255|unique:master_rincian_objeks,nama_rincian_objek',
         ], [
             'nama_rincian_objek.unique' => 'rincian objek sudah ada',
+            'kode_rincian_objek.unique' => 'Kode rincian objek ini sudah ada untuk objek tersebut',
         ]);
 
         MasterRincianObjek::create($request->all());
@@ -26,10 +34,18 @@ class MasterRincianObjekController extends Controller
     {
         $request->validate([
             'master_objek_id'    => 'required|exists:master_objeks,id',
-            'kode_rincian_objek' => 'required|string|size:2',
+            'kode_rincian_objek' => [
+                'required',
+                'string',
+                'size:2',
+                \Illuminate\Validation\Rule::unique('master_rincian_objeks')->where(function ($query) use ($request) {
+                    return $query->where('master_objek_id', $request->master_objek_id);
+                })->ignore($master_rincian_objek->id),
+            ],
             'nama_rincian_objek' => 'required|string|max:255|unique:master_rincian_objeks,nama_rincian_objek,' . $master_rincian_objek->id,
         ], [
             'nama_rincian_objek.unique' => 'rincian objek sudah ada',
+            'kode_rincian_objek.unique' => 'Kode rincian objek ini sudah ada untuk objek tersebut',
         ]);
 
         $master_rincian_objek->update($request->all());
