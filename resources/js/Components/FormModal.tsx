@@ -145,7 +145,13 @@ export default function FormModal({
     return (
         <Modal show={show} onClose={onClose} maxWidth={maxWidth}>
             {onSubmit ? (
-                <form onSubmit={onSubmit} method="POST" className="flex flex-col">
+                <form 
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        onSubmit(e);
+                    }} 
+                    className="flex flex-col"
+                >
                     {inner}
                 </form>
             ) : (

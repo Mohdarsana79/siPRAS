@@ -179,10 +179,10 @@ export default function Index({ objeks, rincianObjeks, kategoris, filters, kelom
     };
 
     useEffect(() => {
-        if (formKategori.errors.kode_sub_rincian_objek) {
+        if (formKategori.errors.kode_sub_rincian_objek || formRincian.errors.kode_rincian_objek || formObjek.errors.kode_objek) {
             setIsDuplicateModalOpen(true);
         }
-    }, [formKategori.errors.kode_sub_rincian_objek]);
+    }, [formKategori.errors.kode_sub_rincian_objek, formRincian.errors.kode_rincian_objek, formObjek.errors.kode_objek]);
 
     const openCreateModal = () => {
         setIsEditing(false);
@@ -224,16 +224,23 @@ export default function Index({ objeks, rincianObjeks, kategoris, filters, kelom
     };
 
     const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
+        
+        const options = { 
+            onSuccess: () => setIsFormModalOpen(false),
+            onError: (err: any) => console.error('Form Submit Error:', err),
+            preserveScroll: true 
+        };
+
         if (activeTab === 'objek') {
-            if (isEditing && editingId) formObjek.put(route('master-objek.update', editingId), { onSuccess: () => setIsFormModalOpen(false) });
-            else formObjek.post(route('master-objek.store'), { onSuccess: () => setIsFormModalOpen(false) });
+            if (isEditing && editingId) formObjek.put(route('master-objek.update', editingId), options);
+            else formObjek.post(route('master-objek.store'), options);
         } else if (activeTab === 'rincian') {
-            if (isEditing && editingId) formRincian.put(route('master-rincian-objek.update', editingId), { onSuccess: () => setIsFormModalOpen(false) });
-            else formRincian.post(route('master-rincian-objek.store'), { onSuccess: () => setIsFormModalOpen(false) });
-        } else {
-            if (isEditing && editingId) formKategori.put(route('master-kategori.update', editingId), { onSuccess: () => setIsFormModalOpen(false) });
-            else formKategori.post(route('master-kategori.store'), { onSuccess: () => setIsFormModalOpen(false) });
+            if (isEditing && editingId) formRincian.put(route('master-rincian-objek.update', editingId), options);
+            else formRincian.post(route('master-rincian-objek.store'), options);
+        } else if (activeTab === 'kategori') {
+            if (isEditing && editingId) formKategori.put(route('master-kategori.update', editingId), options);
+            else formKategori.post(route('master-kategori.store'), options);
         }
     };
 

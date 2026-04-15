@@ -21,7 +21,13 @@ class MasterObjekController extends Controller
                                  ->where('kode_jenis', $request->kode_jenis);
                 }),
             ],
-            'nama_objek' => 'required|string|max:255|unique:master_objeks,nama_objek',
+            'nama_objek' => [
+                'required', 'string', 'max:255',
+                \Illuminate\Validation\Rule::unique('master_objeks', 'nama_objek')->where(function ($query) use ($request) {
+                    return $query->where('kode_kelompok', $request->kode_kelompok)
+                                 ->where('kode_jenis', $request->kode_jenis);
+                }),
+            ],
         ], [
             'nama_objek.unique' => 'objek sudah ada',
             'kode_objek.unique' => 'Kombinasi kode objek ini sudah ada',
@@ -29,7 +35,7 @@ class MasterObjekController extends Controller
 
         MasterObjek::create($request->all());
 
-        return back()->with('success', 'Objek berhasil ditambahkan.');
+        return redirect()->route('master-kategori.index', ['tab' => 'objek'])->with('success', 'Objek berhasil ditambahkan.');
     }
 
     public function update(Request $request, MasterObjek $master_objek)
@@ -46,7 +52,13 @@ class MasterObjekController extends Controller
                                  ->where('kode_jenis', $request->kode_jenis);
                 })->ignore($master_objek->id),
             ],
-            'nama_objek' => 'required|string|max:255|unique:master_objeks,nama_objek,' . $master_objek->id,
+            'nama_objek' => [
+                'required', 'string', 'max:255',
+                \Illuminate\Validation\Rule::unique('master_objeks', 'nama_objek')->where(function ($query) use ($request) {
+                    return $query->where('kode_kelompok', $request->kode_kelompok)
+                                 ->where('kode_jenis', $request->kode_jenis);
+                })->ignore($master_objek->id),
+            ],
         ], [
             'nama_objek.unique' => 'objek sudah ada',
             'kode_objek.unique' => 'Kombinasi kode objek ini sudah ada',
@@ -54,17 +66,17 @@ class MasterObjekController extends Controller
 
         $master_objek->update($request->all());
 
-        return back()->with('success', 'Objek berhasil diperbarui.');
+        return redirect()->route('master-kategori.index', ['tab' => 'objek'])->with('success', 'Objek berhasil diperbarui.');
     }
 
     public function destroy(MasterObjek $master_objek)
     {
         if ($master_objek->rincianObjeks()->exists()) {
-            return back()->with('error', 'Tidak dapat menghapus objek yang masih memiliki rincian objek.');
+            return redirect()->route('master-kategori.index', ['tab' => 'objek'])->with('error', 'Tidak dapat menghapus objek yang masih memiliki rincian objek.');
         }
 
         $master_objek->delete();
 
-        return back()->with('success', 'Objek berhasil dihapus.');
+        return redirect()->route('master-kategori.index', ['tab' => 'objek'])->with('success', 'Objek berhasil dihapus.');
     }
 }

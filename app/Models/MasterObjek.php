@@ -23,6 +23,7 @@ class MasterObjek extends Model
 
     public function getFullCodeByJenisAttribute()
     {
-        return "1.3.{$this->kode_jenis}.{$this->kode_objek}";
+        $kelompok = $this->kode_kelompok ?? '3';
+        return "1.{$kelompok}.{$this->kode_jenis}.{$this->kode_objek}";
     }
 }

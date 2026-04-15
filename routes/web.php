@@ -26,8 +26,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Hirarki Kategori Aset
     Route::resource('master-kategori', \App\Http\Controllers\MasterKategoriController::class)->except(['create', 'edit']);
-    Route::resource('master-objek', \App\Http\Controllers\MasterObjekController::class)->only(['store', 'update', 'destroy']);
-    Route::resource('master-rincian-objek', \App\Http\Controllers\MasterRincianObjekController::class)->only(['store', 'update', 'destroy']);
+    
+    Route::get('master-objek', function () {
+        return redirect()->route('master-kategori.index', ['tab' => 'objek']);
+    });
+    Route::post('master-objek', [\App\Http\Controllers\MasterObjekController::class, 'store'])->name('master-objek.store');
+    Route::put('master-objek/{master_objek}', [\App\Http\Controllers\MasterObjekController::class, 'update'])->name('master-objek.update');
+    Route::delete('master-objek/{master_objek}', [\App\Http\Controllers\MasterObjekController::class, 'destroy'])->name('master-objek.destroy');
+
+    Route::post('master-rincian-objek', [\App\Http\Controllers\MasterRincianObjekController::class, 'store'])->name('master-rincian-objek.store');
+    Route::put('master-rincian-objek/{master_rincian_objek}', [\App\Http\Controllers\MasterRincianObjekController::class, 'update'])->name('master-rincian-objek.update');
+    Route::delete('master-rincian-objek/{master_rincian_objek}', [\App\Http\Controllers\MasterRincianObjekController::class, 'destroy'])->name('master-rincian-objek.destroy');
 
     // KIB (Kartu Inventaris Barang)
     Route::resource('kib-a', \App\Http\Controllers\KibATanahController::class)->except(['create', 'edit']);

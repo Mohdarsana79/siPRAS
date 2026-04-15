@@ -29,6 +29,7 @@ class MasterRincianObjek extends Model
     {
         $objekCode = $this->objek->kode_objek ?? '00';
         $jenisCode = $this->objek->kode_jenis ?? '0';
-        return "1.3.{$jenisCode}.{$objekCode}.{$this->kode_rincian_objek}";
+        $kelompok  = $this->objek->kode_kelompok ?? '3';
+        return "1.{$kelompok}.{$jenisCode}.{$objekCode}.{$this->kode_rincian_objek}";
     }
 }

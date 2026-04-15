@@ -20,7 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->respond(function (\Symfony\Component\HttpFoundation\Response $response) {
             // Daftar status kode error yang akan ditangani oleh halaman Inertia
-            $handledStatuses = [400, 401, 402, 403, 404, 408, 413, 419, 429, 500, 503, 505];
+            $handledStatuses = [400, 401, 402, 403, 404, 405, 408, 413, 419, 429, 500, 503, 505];
 
             if (in_array($response->getStatusCode(), $handledStatuses) && !request()->expectsJson()) {
                 return \Inertia\Inertia::render('Error', [
