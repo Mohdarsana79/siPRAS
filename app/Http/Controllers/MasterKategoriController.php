@@ -42,17 +42,23 @@ class MasterKategoriController extends Controller
                               });
                         })->latest()->paginate(10)->withQueryString();
 
+        // Data for selects (Level 5 & 6)
+        $allObjeks = MasterObjek::orderBy('kode_jenis')->orderBy('kode_objek')->get();
+        $allRincianObjeks = MasterRincianObjek::with('objek')->orderBy('kode_rincian_objek')->get();
+
         return Inertia::render('MasterData/Kategori/Index', [
-            'objeks'        => $objeks,
-            'rincianObjeks' => $rincianObjeks,
-            'kategoris'     => $kategoris,
-            'filters'       => [
+            'objeks'           => $objeks,
+            'rincianObjeks'    => $rincianObjeks,
+            'kategoris'        => $kategoris,
+            'allObjeks'        => $allObjeks,
+            'allRincianObjeks' => $allRincianObjeks,
+            'filters'          => [
                 'search' => $request->search,
                 'tab'    => $tab
             ],
-            'kelompokMap'   => MasterKategori::KELOMPOK_NAMA,
-            'jenisMap'      => MasterKategori::JENIS_NAMA,
-            'jenisToKib'    => MasterKategori::JENIS_TO_KIB,
+            'kelompokMap'      => MasterKategori::KELOMPOK_NAMA,
+            'jenisMap'         => MasterKategori::JENIS_NAMA,
+            'jenisToKib'       => MasterKategori::JENIS_TO_KIB,
         ]);
     }
 

@@ -112,9 +112,15 @@ class MasterKategori extends Model
     protected static function booted(): void
     {
         static::saving(function (MasterKategori $kategori) {
-            if ($kategori->rincianObjek && $kategori->rincianObjek->objek) {
-                $jenis = $kategori->rincianObjek->objek->kode_jenis;
-                if (!$kategori->tipe_kib && isset(self::JENIS_TO_KIB[$jenis])) {
+            // Jika rincianObjek belum loaded (biasanya saat store baru), cari manual
+            $rincian = $kategori->rincianObjek;
+            if (!$rincian && $kategori->master_rincian_objek_id) {
+                $rincian = MasterRincianObjek::with('objek')->find($kategori->master_rincian_objek_id);
+            }
+
+            if ($rincian && $rincian->objek) {
+                $jenis = (string) $rincian->objek->kode_jenis;
+                if (isset(self::JENIS_TO_KIB[$jenis])) {
                     $kategori->tipe_kib = self::JENIS_TO_KIB[$jenis];
                 }
             }

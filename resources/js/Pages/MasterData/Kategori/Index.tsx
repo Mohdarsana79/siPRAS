@@ -48,6 +48,8 @@ interface Props {
     objeks: PaginatedData<Objek>;
     rincianObjeks: PaginatedData<RincianObjek>;
     kategoris: PaginatedData<Kategori>;
+    allObjeks: Objek[];
+    allRincianObjeks: RincianObjek[];
     filters: { search?: string; tab?: string };
     kelompokMap: Record<string, string>;
     jenisMap: Record<string, string>;
@@ -118,7 +120,7 @@ function KodeInput({
     );
 }
 
-export default function Index({ objeks, rincianObjeks, kategoris, filters, kelompokMap, jenisMap, jenisToKib, flash }: Props) {
+export default function Index({ objeks, rincianObjeks, kategoris, allObjeks, allRincianObjeks, filters, kelompokMap, jenisMap, jenisToKib, flash }: Props) {
     const [activeTab, setActiveTab] = useState<'kategori' | 'objek' | 'rincian'>((filters.tab as any) || 'kategori');
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
 
@@ -455,7 +457,7 @@ export default function Index({ objeks, rincianObjeks, kategoris, filters, kelom
                                 label="PILIH OBJEK (LEVEL 4)"
                                 value={formRincian.data.master_objek_id}
                                 onChange={(val) => formRincian.setData('master_objek_id', val as string)}
-                                options={objeks.data.map(o => ({ value: o.id, label: `(${o.kode_jenis}.${o.kode_objek}) ${o.nama_objek}` }))}
+                                options={allObjeks.map(o => ({ value: o.id, label: `(${o.kode_jenis}.${o.kode_objek}) ${o.nama_objek}` }))}
                                 error={formRincian.errors.master_objek_id}
                                 required
                             />
@@ -475,11 +477,43 @@ export default function Index({ objeks, rincianObjeks, kategoris, filters, kelom
                             <SearchableSelect
                                 label="PILIH RINCIAN OBJEK (LEVEL 5)"
                                 value={formKategori.data.master_rincian_objek_id}
-                                onChange={(val) => formKategori.setData('master_rincian_objek_id', val as string)}
-                                options={rincianObjeks.data.map(r => ({ value: r.id, label: `(${r.objek?.kode_jenis}.${r.objek?.kode_objek}.${r.kode_rincian_objek}) ${r.nama_rincian_objek}` }))}
+                                onChange={(val) => {
+                                    const rincian = allRincianObjeks.find(r => String(r.id) === String(val));
+                                    const kib = rincian?.objek?.kode_jenis ? jenisToKib[rincian.objek.kode_jenis] : '';
+                                    
+                                    formKategori.setData({
+                                        ...formKategori.data,
+                                        master_rincian_objek_id: val as string,
+                                        tipe_kib: kib || ''
+                                    });
+                                }}
+                                options={allRincianObjeks.map(r => ({ value: r.id, label: `(${r.objek?.kode_jenis}.${r.objek?.kode_objek}.${r.kode_rincian_objek}) ${r.nama_rincian_objek}` }))}
                                 error={formKategori.errors.master_rincian_objek_id}
                                 required
                             />
+
+                            {formKategori.data.master_rincian_objek_id && (
+                                <div className={`p-4 rounded-2xl border flex items-center justify-between ${formKategori.data.tipe_kib ? KIB_COLORS[formKategori.data.tipe_kib] : 'bg-gray-50 border-gray-200'}`}>
+                                    <div className="flex items-center gap-3">
+                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg border-2 ${formKategori.data.tipe_kib ? 'border-current/20' : 'border-gray-200 text-gray-400'}`}>
+                                            {formKategori.data.tipe_kib || '?'}
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Status KIB</p>
+                                            <p className="font-bold">Terdeteksi: KIB {formKategori.data.tipe_kib || 'Tidak Diketahui'}</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Jenis Aset</p>
+                                        <p className="font-bold text-xs">
+                                            {allRincianObjeks.find(r => String(r.id) === String(formKategori.data.master_rincian_objek_id))?.objek?.kode_jenis ? 
+                                                jenisMap[allRincianObjeks.find(r => String(r.id) === String(formKategori.data.master_rincian_objek_id))!.objek!.kode_jenis] : 
+                                                'Pilih Rincian Objek'
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <KodeInput id="kode_kategori" label="Kode Kategori (XX)" value={formKategori.data.kode_sub_rincian_objek} onChange={(val) => formKategori.setData('kode_sub_rincian_objek', val)} error={formKategori.errors.kode_sub_rincian_objek} />
                                 <div className="space-y-1">
