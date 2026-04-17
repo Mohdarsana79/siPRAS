@@ -7,6 +7,9 @@ use App\Models\MasterObjek;
 use App\Models\MasterRincianObjek;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 
 class MasterKategoriController extends Controller
@@ -127,5 +130,61 @@ class MasterKategoriController extends Controller
 
         $master_kategori->delete();
         return redirect()->route('master-kategori.index')->with('success', 'Kategori berhasil dihapus.');
+    }
+
+    public function exportObjek(Request $request)
+    {
+        $search = strtolower($request->search);
+        $data = MasterObjek::when($search, function ($q, $search) {
+            $q->where(DB::raw('LOWER(nama_objek)'), 'like', "%{$search}%")
+              ->orWhere(DB::raw('LOWER(kode_objek)'), 'like', "%{$search}%");
+        })->latest()->get();
+
+        $title = 'Master_Objek_' . Carbon::now()->format('Ymd');
+        $html = View::make('master-data.objek_excel', compact('data', 'title'))->render();
+
+        return Response::make($html)
+            ->header('Content-Type', 'application/vnd.ms-excel')
+            ->header('Content-Disposition', 'attachment; filename="' . $title . '.xls"');
+    }
+
+    public function exportRincianObjek(Request $request)
+    {
+        $search = strtolower($request->search);
+        $data = MasterRincianObjek::with('objek')
+            ->when($search, function ($q, $search) {
+                $q->where(DB::raw('LOWER(nama_rincian_objek)'), 'like', "%{$search}%")
+                  ->orWhere(DB::raw('LOWER(kode_rincian_objek)'), 'like', "%{$search}%")
+                  ->orWhereHas('objek', function($sq) use ($search) {
+                      $sq->where(DB::raw('LOWER(nama_objek)'), 'like', "%{$search}%");
+                  });
+            })->latest()->get();
+
+        $title = 'Master_Rincian_Objek_' . Carbon::now()->format('Ymd');
+        $html = View::make('master-data.rincian_objek_excel', compact('data', 'title'))->render();
+
+        return Response::make($html)
+            ->header('Content-Type', 'application/vnd.ms-excel')
+            ->header('Content-Disposition', 'attachment; filename="' . $title . '.xls"');
+    }
+
+    public function exportKategori(Request $request)
+    {
+        $search = strtolower($request->search);
+        $data = MasterKategori::with(['rincianObjek.objek'])
+            ->when($search, function ($q, $search) {
+                $q->where(DB::raw('LOWER(nama_kategori)'), 'like', "%{$search}%")
+                  ->orWhere(DB::raw('LOWER(kode_sub_rincian_objek)'), 'like', "%{$search}%")
+                  ->orWhereHas('rincianObjek', function($sq) use ($search) {
+                      $sq->where(DB::raw('LOWER(nama_rincian_objek)'), 'like', "%{$search}%");
+                  });
+            })->latest()->get();
+
+        $title = 'Master_Kategori_' . Carbon::now()->format('Ymd');
+        $html = View::make('master-data.kategori_excel', compact('data', 'title'))->render();
+
+        return Response::make($html)
+            ->header('Content-Type', 'application/vnd.ms-excel')
+            ->header('Content-Disposition', 'attachment; filename="' . $title . '.xls"');
     }
 }

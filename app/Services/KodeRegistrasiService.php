@@ -24,13 +24,13 @@ class KodeRegistrasiService
     /**
      * Generate nomor register (nomor urut).
      *
-     * @param  string  $kodeBarang  Kode barang 7-level (x.x.x.xx.xx.xx.xxx)
+     * @param  string  $tipeKib
      * @param  string  $tanggalPerolehan
      * @return string  Nomor urut (6 digit)
      */
-    public function generate(string $kodeBarang, string $tanggalPerolehan): string
+    public function generate(string $tipeKib, string $tanggalPerolehan): string
     {
-        return $this->getNextNomorUrut($kodeBarang);
+        return $this->getNextNomorUrut($tipeKib);
     }
 
     /**
@@ -43,16 +43,18 @@ class KodeRegistrasiService
     }
 
     /**
-     * Generate nomor urut berikutnya per kode barang.
+     * Generate nomor urut berikutnya per tipe KIB.
      * Tidak lagi di-reset per tahun sesuai standar BMD.
      *
-     * @param  string  $kodeBarang
+     * @param  string  $tipeKib
      * @return string  Nomor urut 6 digit dengan leading zeros
      */
-    public function getNextNomorUrut(string $kodeBarang): string
+    public function getNextNomorUrut(string $tipeKib): string
     {
-        // Cari nomor urut tertinggi untuk kode barang yang sama
-        $lastItem = Item::where('kode_barang', $kodeBarang)
+        // Cari nomor urut tertinggi untuk tipe KIB yang sama
+        $lastItem = Item::whereHas('kategori', function($q) use ($tipeKib) {
+                $q->where('tipe_kib', $tipeKib);
+            })
             ->orderByRaw('CAST(nomor_register AS INTEGER) DESC')
             ->first();
 
@@ -81,7 +83,7 @@ class KodeRegistrasiService
         $nextLevel7 = $this->getNextLevel7($tipeKib);
         
         $fullKodeBarang = "{$baseKode}.{$nextLevel7}";
-        $nomorRegister  = $this->generate($fullKodeBarang, $tanggalPerolehan);
+        $nomorRegister  = $this->generate($tipeKib, $tanggalPerolehan);
 
         return [
             'kode_barang'      => $fullKodeBarang,
@@ -95,6 +97,7 @@ class KodeRegistrasiService
     public function generateForUpdate(Item $item, int $kategoriId, string $tanggalPerolehan): array
     {
         $kategori  = MasterKategori::findOrFail($kategoriId);
+        $tipeKib   = $kategori->tipe_kib;
         
         // Cek apakah kategori (Level 1-6) berubah
         $baseKode = $kategori->kode_barang;
@@ -110,11 +113,10 @@ class KodeRegistrasiService
         }
 
         // Jika kategori berubah total, generate Level 7 baru untuk KIB tersebut
-        $tipeKib = $kategori->tipe_kib;
         $nextLevel7 = $this->getNextLevel7($tipeKib);
         $fullKodeBarang = "{$baseKode}.{$nextLevel7}";
         
-        $nomorRegister = $this->generate($fullKodeBarang, $tanggalPerolehan);
+        $nomorRegister = $this->generate($tipeKib, $tanggalPerolehan);
 
         return [
             'kode_barang'    => $fullKodeBarang,

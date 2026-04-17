@@ -90,6 +90,12 @@ const Icons = {
     ),
     GitBranch: (props: any) => (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+    ),
+    FileDown: (props: any) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg>
+    ),
+    FileUp: (props: any) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M12 12v6"/><path d="m15 15-3-3-3 3"/></svg>
     )
 };
 
@@ -137,6 +143,7 @@ export default function Index({ objeks, rincianObjeks, kategoris, allObjeks, all
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedDeleteId, setSelectedDeleteId] = useState<number | null>(null);
     const [isDuplicateModalOpen, setIsDuplicateModalOpen] = useState(false);
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
     // Form Objek (Level 4)
     const formObjek = useForm({
@@ -159,6 +166,11 @@ export default function Index({ objeks, rincianObjeks, kategoris, allObjeks, all
         kode_sub_rincian_objek: '',
         nama_kategori: '',
         tipe_kib: '',
+    });
+
+    // Form Import
+    const formImport = useForm({
+        file: null as File | null,
     });
 
     // Handle Search
@@ -258,6 +270,31 @@ export default function Index({ objeks, rincianObjeks, kategoris, allObjeks, all
         else router.delete(route('master-kategori.destroy', selectedDeleteId), { onSuccess: () => setIsDeleteModalOpen(false) });
     };
 
+    const handleExport = () => {
+        let routeName = '';
+        if (activeTab === 'objek') routeName = 'master-objek.export';
+        else if (activeTab === 'rincian') routeName = 'master-rincian-objek.export';
+        else routeName = 'master-kategori.export';
+
+        window.location.href = route(routeName, { search: searchTerm });
+    };
+
+    const handleImportSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        let routeName = '';
+        if (activeTab === 'objek') routeName = 'master-objek.import';
+        else if (activeTab === 'rincian') routeName = 'master-rincian-objek.import';
+        else routeName = 'master-kategori.import';
+
+        formImport.post(route(routeName), {
+            onSuccess: () => {
+                setIsImportModalOpen(false);
+                formImport.reset();
+            },
+            preserveScroll: true
+        });
+    };
+
     return (
         <AuthenticatedLayout
             header={
@@ -303,10 +340,20 @@ export default function Index({ objeks, rincianObjeks, kategoris, allObjeks, all
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
-                    <PrimaryButton onClick={openCreateModal} className="!rounded-xl !py-2.5 px-5 flex items-center gap-2 !bg-rose-600 hover:!bg-rose-700 shadow-sm transition-all justify-center whitespace-nowrap !text-xs">
-                        <Icons.Plus className="w-4 h-4" />
-                        <span>TAMBAH {activeTab === 'objek' ? 'OBJEK' : (activeTab === 'rincian' ? 'RINCIAN' : 'KATEGORI')}</span>
-                    </PrimaryButton>
+                    <div className="flex items-center gap-3">
+                        <SecondaryButton onClick={() => setIsImportModalOpen(true)} className="!rounded-xl !py-2.5 px-5 flex items-center gap-2 !bg-blue-50 !text-blue-700 !border-blue-200 hover:!bg-blue-100 shadow-sm transition-all justify-center whitespace-nowrap !text-[10px] font-black">
+                            <Icons.FileUp className="w-4 h-4" />
+                            <span>IMPORT EXCEL</span>
+                        </SecondaryButton>
+                        <SecondaryButton onClick={handleExport} className="!rounded-xl !py-2.5 px-5 flex items-center gap-2 !bg-emerald-50 !text-emerald-700 !border-emerald-200 hover:!bg-emerald-100 shadow-sm transition-all justify-center whitespace-nowrap !text-[10px] font-black">
+                            <Icons.FileDown className="w-4 h-4" />
+                            <span>EXPORT EXCEL</span>
+                        </SecondaryButton>
+                        <PrimaryButton onClick={openCreateModal} className="!rounded-xl !py-2.5 px-5 flex items-center gap-2 !bg-rose-600 hover:!bg-rose-700 shadow-sm transition-all justify-center whitespace-nowrap !text-[10px] font-black">
+                            <Icons.Plus className="w-4 h-4" />
+                            <span>TAMBAH {activeTab === 'objek' ? 'OBJEK' : (activeTab === 'rincian' ? 'RINCIAN' : 'KATEGORI')}</span>
+                        </PrimaryButton>
+                    </div>
                 </div>
 
                 {/* Table Section */}
@@ -544,6 +591,63 @@ export default function Index({ objeks, rincianObjeks, kategoris, allObjeks, all
                 confirmText="Tutup"
                 cancelText=""
             />
+
+            {/* Import Modal */}
+            <Modal show={isImportModalOpen} onClose={() => setIsImportModalOpen(false)} maxWidth="md">
+                <div className="p-6">
+                    <div className="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 className="text-xl font-black text-gray-900 uppercase">Import Data {activeTab.toUpperCase()}</h3>
+                            <p className="text-xs text-gray-500 font-bold tracking-widest uppercase mt-1">Level {activeTab === 'objek' ? '4' : (activeTab === 'rincian' ? '5' : '6')} Permendagri 108</p>
+                        </div>
+                        <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+                            <Icons.FileUp className="w-6 h-6" />
+                        </div>
+                    </div>
+
+                    <form onSubmit={handleImportSubmit} className="space-y-6">
+                        <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-3xl p-8 transition-all hover:border-blue-300">
+                            <div className="text-center">
+                                <Icons.Layers className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                                <div className="flex flex-col items-center">
+                                    <label className="cursor-pointer">
+                                        <span className="bg-white px-4 py-2 rounded-xl border border-gray-200 text-xs font-black shadow-sm transition-all hover:bg-gray-50 block">
+                                            {formImport.data.file ? formImport.data.file.name : 'PILIH FILE EXCEL / CSV'}
+                                        </span>
+                                        <input 
+                                            type="file" 
+                                            className="hidden" 
+                                            accept=".xlsx,.xls,.csv"
+                                            onChange={e => formImport.setData('file', e.target.files ? e.target.files[0] : null)}
+                                        />
+                                    </label>
+                                    <p className="mt-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Format: .xlsx (Recommended), .xls, .csv</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {formImport.progress && (
+                            <div className="w-full bg-gray-100 rounded-full h-2 shadow-inner overflow-hidden">
+                                <div className="bg-blue-600 h-full transition-all duration-300" style={{ width: `${formImport.progress.percentage}%` }}></div>
+                            </div>
+                        )}
+
+                        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-gray-100">
+                            <a 
+                                href={route('master-data.import-template', activeTab)}
+                                className="text-[10px] font-black text-indigo-600 hover:text-indigo-800 flex items-center gap-2 uppercase tracking-widest"
+                            >
+                                <Icons.FileDown className="w-4 h-4" />
+                                Unduh Template Excel {activeTab.toUpperCase()}
+                            </a>
+                            <div className="flex gap-3 w-full sm:w-auto">
+                                <SecondaryButton type="button" onClick={() => setIsImportModalOpen(false)} className="flex-1 sm:flex-none justify-center !rounded-xl !text-[10px] font-black !py-2.5">BATAL</SecondaryButton>
+                                <PrimaryButton disabled={!formImport.data.file || formImport.processing} className="flex-1 sm:flex-none justify-center !rounded-xl !bg-blue-600 hover:!bg-blue-700 !text-[10px] font-black !py-2.5">MULAI IMPORT</PrimaryButton>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </Modal>
         </AuthenticatedLayout>
     );
 }

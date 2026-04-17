@@ -26,6 +26,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Hirarki Kategori Aset
     Route::resource('master-kategori', \App\Http\Controllers\MasterKategoriController::class)->except(['create', 'edit']);
+    Route::get('master-kategori-export', [\App\Http\Controllers\MasterKategoriController::class, 'exportKategori'])->name('master-kategori.export');
+    Route::get('master-objek-export', [\App\Http\Controllers\MasterKategoriController::class, 'exportObjek'])->name('master-objek.export');
+    Route::get('master-rincian-objek-export', [\App\Http\Controllers\MasterKategoriController::class, 'exportRincianObjek'])->name('master-rincian-objek.export');
+    
+    // Import Master Data
+    Route::post('master-data/import/objek', [\App\Http\Controllers\MasterDataImportController::class, 'importObjek'])->name('master-objek.import');
+    Route::post('master-data/import/rincian-objek', [\App\Http\Controllers\MasterDataImportController::class, 'importRincianObjek'])->name('master-rincian-objek.import');
+    Route::post('master-data/import/kategori', [\App\Http\Controllers\MasterDataImportController::class, 'importKategori'])->name('master-kategori.import');
+    Route::get('master-data/import/template/{level}', [\App\Http\Controllers\MasterDataImportController::class, 'downloadTemplate'])->name('master-data.import-template');
     
     Route::get('master-objek', function () {
         return redirect()->route('master-kategori.index', ['tab' => 'objek']);
