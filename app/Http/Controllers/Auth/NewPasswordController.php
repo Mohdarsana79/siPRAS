@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
@@ -65,5 +66,44 @@ class NewPasswordController extends Controller
         throw ValidationException::withMessages([
             'email' => [trans($status)],
         ]);
+    }
+
+    /**
+     * Handle an incoming new password request via OTP.
+     *
+     * @throws ValidationException
+     */
+    public function storeOtp(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp' => 'required|digits:6',
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        $cachedOtp = Cache::get('otp_' . $request->email);
+
+        if (!$cachedOtp || $cachedOtp !== $request->otp) {
+            throw ValidationException::withMessages([
+                'otp' => ['Kode OTP tidak valid atau sudah kedaluwarsa.'],
+            ]);
+        }
+
+        $user = \App\Models\User::where('email', $request->email)->first();
+
+        if (!$user) {
+            throw ValidationException::withMessages([
+                'email' => ['Kami tidak dapat menemukan pengguna dengan alamat email tersebut.'],
+            ]);
+        }
+
+        $user->forceFill([
+            'password' => Hash::make($request->password),
+            'remember_token' => Str::random(60),
+        ])->save();
+
+        Cache::forget('otp_' . $request->email);
+
+        return redirect()->route('login')->with('status', 'Password berhasil direset. Silakan login dengan password baru Anda.');
     }
 }

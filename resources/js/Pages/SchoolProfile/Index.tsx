@@ -79,6 +79,9 @@ const Icons = {
     ),
     Camera: (props: any) => (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+    ),
+    Trash: (props: any) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
     )
 };
 
@@ -119,10 +122,29 @@ export default function Index({ profile }: { profile: SchoolProfile | null }) {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'logo' | 'logo_daerah') => {
         const file = e.target.files?.[0];
         if (file) {
+            // Limit size to 2MB
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Ukuran file maksimal 2 MB');
+                e.target.value = '';
+                return;
+            }
+
             setData(field, file);
             const reader = new FileReader();
             reader.onloadend = () => field === 'logo' ? setPreviewUrl(reader.result as string) : setPreviewDaerahUrl(reader.result as string);
             reader.readAsDataURL(file);
+        }
+    };
+
+    const removeFile = (e: React.MouseEvent, field: 'logo' | 'logo_daerah') => {
+        e.stopPropagation();
+        setData(field, null);
+        if (field === 'logo') {
+            setPreviewUrl(null);
+            if (fileInput.current) fileInput.current.value = '';
+        } else {
+            setPreviewDaerahUrl(null);
+            if (fileDaerahInput.current) fileDaerahInput.current.value = '';
         }
     };
 
@@ -445,9 +467,22 @@ export default function Index({ profile }: { profile: SchoolProfile | null }) {
                                         onClick={() => fileInput.current?.click()}
                                         className="aspect-square bg-gray-50 rounded-xl border border-dashed border-gray-200 hover:border-indigo-500 cursor-pointer overflow-hidden flex items-center justify-center relative group"
                                     >
-                                        {previewUrl ? <img src={previewUrl} className="w-full h-full object-contain p-3" /> : <Icons.Camera className="w-6 h-6 text-gray-300" />}
+                                        {previewUrl ? (
+                                            <>
+                                                <img src={previewUrl} className="w-full h-full object-contain p-3" />
+                                                <button 
+                                                    type="button"
+                                                    onClick={(e) => removeFile(e, 'logo')}
+                                                    className="absolute top-2 right-2 p-1.5 bg-white/90 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg shadow-sm border border-rose-100 transition-all opacity-0 group-hover:opacity-100 z-10"
+                                                    title="Hapus Logo"
+                                                >
+                                                    <Icons.Trash className="w-3.5 h-3.5" />
+                                                </button>
+                                            </>
+                                        ) : <Icons.Camera className="w-6 h-6 text-gray-300" />}
                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-[9pt] uppercase font-bold">Ubah</div>
                                     </div>
+                                    <p className="text-[7pt] text-gray-400 text-center">Max. 2MB (Image)</p>
                                     <input type="file" ref={fileInput} className="hidden" accept="image/*" onChange={(e) => handleFileChange(e, 'logo')} />
                                 </div>
                                 <div className="space-y-2">
@@ -456,9 +491,22 @@ export default function Index({ profile }: { profile: SchoolProfile | null }) {
                                         onClick={() => fileDaerahInput.current?.click()}
                                         className="aspect-square bg-gray-50 rounded-xl border border-dashed border-gray-200 hover:border-emerald-500 cursor-pointer overflow-hidden flex items-center justify-center relative group"
                                     >
-                                        {previewDaerahUrl ? <img src={previewDaerahUrl} className="w-full h-full object-contain p-3" /> : <Icons.Camera className="w-6 h-6 text-gray-300" />}
+                                        {previewDaerahUrl ? (
+                                            <>
+                                                <img src={previewDaerahUrl} className="w-full h-full object-contain p-3" />
+                                                <button 
+                                                    type="button"
+                                                    onClick={(e) => removeFile(e, 'logo_daerah')}
+                                                    className="absolute top-2 right-2 p-1.5 bg-white/90 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg shadow-sm border border-rose-100 transition-all opacity-0 group-hover:opacity-100 z-10"
+                                                    title="Hapus Logo"
+                                                >
+                                                    <Icons.Trash className="w-3.5 h-3.5" />
+                                                </button>
+                                            </>
+                                        ) : <Icons.Camera className="w-6 h-6 text-gray-300" />}
                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-[9pt] uppercase font-bold">Ubah</div>
                                     </div>
+                                    <p className="text-[7pt] text-gray-400 text-center">Max. 2MB (Image)</p>
                                     <input type="file" ref={fileDaerahInput} className="hidden" accept="image/*" onChange={(e) => handleFileChange(e, 'logo_daerah')} />
                                 </div>
                             </div>

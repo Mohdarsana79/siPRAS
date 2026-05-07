@@ -33,6 +33,12 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
+
+    Route::post('verify-otp', [PasswordResetLinkController::class, 'verifyOtp'])
+        ->name('password.verify-otp');
+
+    Route::post('reset-password-otp', [NewPasswordController::class, 'storeOtp'])
+        ->name('password.store-otp');
 });
 
 Route::middleware('auth')->group(function () {
